@@ -17,8 +17,6 @@ In addition to the API itself, the project also includes comprehensive documenta
 - [ ] Swagger Integration
 - [ ] Postman Documentation
 
-## Tech Stacks
-
 ## Endpoints
 
 ### /v1/matkul
@@ -41,6 +39,8 @@ In addition to the API itself, the project also includes comprehensive documenta
     - `jam` (string)
     - `matkul` (string)
     - `kode_dosen` (string)
+
+## Tech Stacks
 
 ### Rust
 Rust is a multi-paradigm programming language designed for performance and safety, especially safe concurrency. Rust is syntactically similar to C++, but its designers intend it to provide better memory safety while maintaining high performance.
