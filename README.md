@@ -8,9 +8,9 @@ In addition to the API itself, the project also includes comprehensive documenta
 
 ## Progress 
 
-- [ ] `/v1/matkul` endpoint
+- [X] `/v1/matkul` endpoint
 - [ ] `/v1/dosen` endpoint
-- [ ] `/v1/kelas` ednpoint
+- [X] `/v1/kelas` ednpoint
 - [ ] Rate limiter
 - [ ] Dockerize
 - [ ] Deploy to Fly.io

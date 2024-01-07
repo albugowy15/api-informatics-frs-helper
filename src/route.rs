@@ -19,7 +19,10 @@ pub async fn get_routes() -> Router {
     Router::new()
         .route("/", get(services::home_service::home_handler))
         .route("/v1/matkul", get(services::course_service::course_handler))
-        .route("/v1/matkul/:id_matkul", get(|| async {}))
+        .route(
+            "/v1/matkul/:id_matkul",
+            get(services::course_service::course_with_id_handler),
+        )
         .route(
             "/v1/dosen",
             get(services::lecturer_service::lecturer_handler),
