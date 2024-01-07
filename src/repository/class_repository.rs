@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use sqlx::Row;
 
 use crate::db::DbPool;
@@ -7,7 +7,7 @@ pub struct ClassRepository<'a> {
     db: &'a DbPool,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct Class {
     pub id: String,
     pub matkul: String,

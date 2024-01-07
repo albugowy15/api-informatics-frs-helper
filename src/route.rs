@@ -27,7 +27,10 @@ pub async fn get_routes() -> Router {
             "/v1/dosen",
             get(services::lecturer_service::lecturer_handler),
         )
-        .route("/v1/dosen/:id_dosen", get(|| async {}))
+        .route(
+            "/v1/dosen/:id_dosen",
+            get(services::lecturer_service::lecturer_with_id_handler),
+        )
         .route("/v1/kelas", get(services::class_service::class_handler))
         .route(
             "/v1/kelas/:id_kelas",

@@ -17,7 +17,7 @@ pub async fn course_handler(
 ) -> RouteHandler {
     let course_repo = repository::course_repository::CourseRepository::new(&state.db_pool);
     let mut courses = match course_repo.get_courses().await {
-        Ok(result) => result,
+        Ok(courses) => courses,
         _ => {
             return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -27,7 +27,12 @@ pub async fn course_handler(
     };
 
     if let Some(course_name_param) = params.get("nama") {
-        courses.retain(|course| course.nama == *course_name_param)
+        courses.retain(|course| {
+            course
+                .nama
+                .to_lowercase()
+                .contains(&course_name_param.to_lowercase())
+        })
     }
     if let Some(semester_param) = params.get("semester") {
         let parse_semester_param = match semester_param.parse::<i8>() {
