@@ -1,21 +1,16 @@
 # 🚧🚧🚧 Informatics FRS Helper API 🚧🚧🚧
 
-This project is a RESTful API designed to assist you gather more information related to Informatics FRS Helper. It provides several endpoints to access data related to courses (`/v1/matkul`), lecturers (`/v1/dosen`), and classes (`/v1/kelas`). 
-
-The API is built with scalability and ease of use in mind, and it includes features such as rate limiting to ensure fair usage and prevent abuse. It is also designed to be easily deployable using Docker and Fly.io, making it highly portable and cloud-ready.
-
-In addition to the API itself, the project also includes comprehensive documentation through Swagger and Postman, making it easy for you to understand how to use the various endpoints and what data they can expect to receive.
+This project is a RESTful API designed to assist you gather more information related to Informatics FRS Helper. It provides several endpoints to access data related to courses (`/v1/matkul`), lecturers (`/v1/dosen`), and classes (`/v1/kelas`).
 
 ## Progress 
 
 - [X] `/v1/matkul` endpoint
-- [ ] `/v1/dosen` endpoint
+- [X] `/v1/dosen` endpoint
 - [X] `/v1/kelas` ednpoint
 - [ ] Rate limiter
 - [ ] Dockerize
 - [ ] Deploy to Fly.io
-- [ ] Swagger Integration
-- [ ] Postman Documentation
+- [X] Postman Documentation
 
 ## Endpoints
 
@@ -39,6 +34,12 @@ In addition to the API itself, the project also includes comprehensive documenta
     - `jam` (string)
     - `matkul` (string)
     - `kode_dosen` (string)
+
+## Documentation
+
+For more detailed information about the API and its usage, please refer to this [Postman Documentation](https://documenter.getpostman.com/view/30505077/2s9YsJBCJo). Postman is a great tool for interacting with our API endpoints. To get started, simply click the button below to import the pre-configured collection into your Postman application.
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/30505077-3870bf0a-a82f-486e-9385-22ad91100a56?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D30505077-3870bf0a-a82f-486e-9385-22ad91100a56%26entityType%3Dcollection%26workspaceId%3D307a9cd1-e40a-4022-ae90-d057479f2a88#?env%5Bprod%5D=W3sia2V5IjoiQkFTRV9VUkwiLCJ2YWx1ZSI6Imh0dHBzOi8vYXBpLWluZm9ybWF0aWNzLWZycy1oZWxwZXIuZmx5LmRldiIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoiaHR0cHM6Ly9hcGktaW5mb3JtYXRpY3MtZnJzLWhlbHBlci5mbHkuZGV2Iiwic2Vzc2lvbkluZGV4IjowfSx7ImtleSI6IkFQSV9WRVJTSU9OIiwidmFsdWUiOiJ2MSIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoidjEiLCJzZXNzaW9uSW5kZXgiOjF9XQ==)
 
 ## Tech Stacks
 
