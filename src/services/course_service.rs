@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
-use axum::{extract::Query, http::StatusCode, Json};
+use axum::{extract::Query, Json};
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::json;
+
+use super::RouteHandler;
 
 #[derive(Serialize)]
 struct CourseResponse {
@@ -11,9 +13,7 @@ struct CourseResponse {
     sks: u16,
 }
 
-pub async fn course_handler(
-    Query(_params): Query<HashMap<String, String>>,
-) -> Result<Json<Value>, (StatusCode, String)> {
+pub async fn course_handler(Query(_params): Query<HashMap<String, String>>) -> RouteHandler {
     let response = CourseResponse {
         nama: String::from("jaringan komputer"),
         semester: 5,

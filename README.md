@@ -20,21 +20,21 @@ In addition to the API itself, the project also includes comprehensive documenta
 ## Endpoints
 
 ### /v1/matkul
+- Dynamic Path : `/v1/matkul/:id_matkul`
 - Query params:
-    - `id` (string)
     - `nama` (string)
     - `semester` (integer)
     - `sks` (integer)
 
 ### /v1/dosen
+- Dynamic Path : `/v1/dosen/:id_dosen`
 - Query params: 
-    - `id` (string)
     - `nama` (string)
     - `kode` (string)
 
 ### /v1/kelas
+- Dynamic Path : `/v1/kelas/:id_kelas`
 - Query params: 
-    - `id` (string)
     - `hari` (string)
     - `jam` (string)
     - `matkul` (string)
