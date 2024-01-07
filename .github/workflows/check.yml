@@ -1,4 +1,4 @@
-name: Code Check (Clippy, Fmt, Unit Test)
+name: Code Check (Release Build, Clippy, Fmt, Unit Test)
 
 on:
   push:
@@ -8,31 +8,30 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-Dwarnings"
 
 jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --release
   clippy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build
     - name: Run cargo clippy
-      run: cargo clippy
-  
+      run: cargo clippy --all-targets --all-features
   fmt: 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build
     - name: Run cargo fmt
-      run: cargo fmt --check
-  
+      run: cargo fmt --all -- --check
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build
     - name: Run cargo test
       run: cargo test
