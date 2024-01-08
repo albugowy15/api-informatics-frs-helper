@@ -38,10 +38,10 @@ pub async fn get_routes() -> Router {
             "/v1/kelas/:id_kelas",
             get(services::class_service::class_by_id_handler),
         )
-        .layer((
-            TraceLayer::new_for_http(),
-            TimeoutLayer::new(Duration::from_secs(10)),
+        .layer(
             ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(TimeoutLayer::new(Duration::from_secs(10)))
                 .layer(HandleErrorLayer::new(|err: BoxError| async move {
                     (
                         StatusCode::INTERNAL_SERVER_ERROR,
@@ -50,6 +50,6 @@ pub async fn get_routes() -> Router {
                 }))
                 .layer(BufferLayer::new(1024))
                 .layer(RateLimitLayer::new(5, Duration::from_secs(1))),
-        ))
+        )
         .with_state(shared_state)
 }
