@@ -1,5 +1,3 @@
-ARG RUST_VERSION=1.75.0
-
 FROM rust:bookworm AS builder
 WORKDIR /app
 COPY . .
@@ -20,7 +18,6 @@ RUN adduser \
   appuser
 COPY --from=builder /api-informatics-frs-helper /usr/local/bin
 RUN chown appuser /usr/local/bin/api-informatics-frs-helper
-COPY --from=builder /app/config /opt/api-informatics-frs-helper/config
 RUN chown -R appuser /opt/api-informatics-frs-helper
 RUN touch /opt/.env
 USER appuser
