@@ -1,7 +1,9 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
-use axum::{routing::get, Router};
-use tower_http::trace::TraceLayer;
+use axum::{error_handling::HandleErrorLayer, routing::get, BoxError, Router};
+use hyper::StatusCode;
+use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
+use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 
 use crate::{
     db::{DbConnection, DbPool},
@@ -36,6 +38,18 @@ pub async fn get_routes() -> Router {
             "/v1/kelas/:id_kelas",
             get(services::class_service::class_by_id_handler),
         )
-        .layer(TraceLayer::new_for_http())
+        .layer((
+            TraceLayer::new_for_http(),
+            TimeoutLayer::new(Duration::from_secs(10)),
+            ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|err: BoxError| async move {
+                    (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        format!("Internal server error: {}", err),
+                    )
+                }))
+                .layer(BufferLayer::new(1024))
+                .layer(RateLimitLayer::new(5, Duration::from_secs(1))),
+        ))
         .with_state(shared_state)
 }
