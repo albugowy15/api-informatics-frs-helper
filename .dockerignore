@@ -1,7 +1,11 @@
 .github
+.vscode
 **/.git
 **/target
 Dockerfile
 LICENSE
 README.md
-release.toml
+docker-compose.yaml
+.gitignore
+.env
+.env.example
