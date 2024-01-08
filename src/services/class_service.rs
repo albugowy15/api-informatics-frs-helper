@@ -9,12 +9,12 @@ use serde_json::json;
 
 use crate::{repository, route::AppState};
 
-use super::{RouteHandler, SuccessResponse};
+use super::{JsonResponse, RouteHandler, SuccessResponse};
 
 pub async fn class_handler(
     State(app_state): State<Arc<AppState>>,
     Query(params): Query<HashMap<String, String>>,
-) -> RouteHandler {
+) -> RouteHandler<JsonResponse> {
     let class_repo = repository::class_repository::ClassRepository::new(&app_state.db_pool);
     let mut classes = match class_repo.get_classes().await {
         Ok(classes) => classes,
@@ -50,7 +50,7 @@ pub async fn class_handler(
 pub async fn class_by_id_handler(
     State(app_state): State<Arc<AppState>>,
     Path(id_kelas): Path<String>,
-) -> RouteHandler {
+) -> RouteHandler<JsonResponse> {
     let class_repo = repository::class_repository::ClassRepository::new(&app_state.db_pool);
     let class = match class_repo.get_class_by_id(&id_kelas).await {
         Ok(class) => class,
