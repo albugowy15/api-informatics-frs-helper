@@ -1,0 +1,476 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Swagger API Informatics FRS Helper",
+    "description": "Dokumentasi swagger untuk API Informatics FRS Helper",
+    "contact": {
+      "email": "kholidbughowi@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "Postman Collection",
+    "url": "https://documenter.getpostman.com/view/30505077/2s9YsJBCJo"
+  },
+  "servers": [
+    {
+      "url": "/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "dosen",
+      "description": "Akses informasi terkait dosen"
+    },
+    {
+      "name": "kelas",
+      "description": "Akses informasi terkait kelas"
+    },
+    {
+      "name": "matkul",
+      "description": "Akses informasi terkait matkul"
+    }
+  ],
+  "paths": {
+    "/dosen": {
+      "get": {
+        "tags": ["dosen"],
+        "summary": "Mendapatkan informasi semua dosen",
+        "operationId": "getDosen",
+        "parameters": [
+          {
+            "name": "nama",
+            "in": "query",
+            "description": "Nama dosen",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kode",
+            "in": "query",
+            "description": "Kode dosen",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "name": "data",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clfrsn7xt000ci5xwf2hehw0e"
+                          },
+                          "kode": {
+                            "type": "string",
+                            "example": "BJ"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Bagus Jati Santoso, S.Kom., Ph.D."
+                          }
+                        }
+                      }
+                    },
+                    "total_results": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/dosen/{id_dosen}": {
+      "get": {
+        "tags": ["dosen"],
+        "summary": "Mendapatkan dosen dengan id",
+        "operationId": "getDosenById",
+        "parameters": [
+          {
+            "name": "id_dosen",
+            "in": "path",
+            "description": "Id dosen",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "clfrsn7xt000ci5xwf2hehw0e"
+                    },
+                    "kode": {
+                      "type": "string",
+                      "example": "BJ"
+                    },
+                    "nama": {
+                      "type": "string",
+                      "example": "Bagus Jati Santoso, S.Kom., Ph.D."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/kelas": {
+      "get": {
+        "tags": ["kelas"],
+        "summary": "Mendapatkan informasi semua kelas",
+        "operationId": "getKelas",
+        "parameters": [
+          {
+            "name": "hari",
+            "in": "query",
+            "description": "Hari kelas",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "jam",
+            "in": "query",
+            "description": "Jam kelas",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "matkul",
+            "in": "query",
+            "description": "Nama matkul",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kode_dosen",
+            "in": "query",
+            "description": "Kode dosen yang mengajar kelas",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "name": "data",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "cll8173md0004i56yjtfxwzza"
+                          },
+                          "hari": {
+                            "type": "string",
+                            "example": "Senin"
+                          },
+                          "jam": {
+                            "type": "string",
+                            "example": "07.00-09.00"
+                          },
+                          "kode_dosen": {
+                            "type": "string",
+                            "example": "BA"
+                          },
+                          "kode_kelas": {
+                            "type": "string",
+                            "example": "A"
+                          },
+                          "matkul": {
+                            "type": "Aljabar Linier",
+                            "example": "A"
+                          },
+                          "nama_dosen": {
+                            "type": "string",
+                            "example": "Dr. Bilqis Amaliah, S.Kom.,M.Kom."
+                          }
+                        }
+                      }
+                    },
+                    "total_results": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/kelas/{id_kelas}": {
+      "get": {
+        "tags": ["kelas"],
+        "summary": "Mendapatkan kelas dengan id",
+        "operationId": "getKelasById",
+        "parameters": [
+          {
+            "name": "id_kelas",
+            "in": "path",
+            "description": "Id kelas",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "cll8173md0004i56yjtfxwzza"
+                    },
+                    "hari": {
+                      "type": "string",
+                      "example": "Senin"
+                    },
+                    "jam": {
+                      "type": "string",
+                      "example": "07.00-09.00"
+                    },
+                    "kode_dosen": {
+                      "type": "string",
+                      "example": "BA"
+                    },
+                    "kode_kelas": {
+                      "type": "string",
+                      "example": "A"
+                    },
+                    "matkul": {
+                      "type": "Aljabar Linier",
+                      "example": "A"
+                    },
+                    "nama_dosen": {
+                      "type": "string",
+                      "example": "Dr. Bilqis Amaliah, S.Kom.,M.Kom."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/matkul": {
+      "get": {
+        "tags": ["matkul"],
+        "summary": "Mendapatkan informasi semua mata kuliah",
+        "operationId": "getMatkul",
+        "parameters": [
+          {
+            "name": "nama",
+            "in": "query",
+            "description": "Nama mata kuliah",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "semester",
+            "in": "query",
+            "description": "Semester mata kuliah",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sks",
+            "in": "query",
+            "description": "Jumlah sks mata kuliah",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "name": "data",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clkus040m0000i5ulz0zesnfa"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Dasar Pemrograman"
+                          },
+                          "semester": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "sks": {
+                            "type": "integer",
+                            "example": 4
+                          }
+                        }
+                      }
+                    },
+                    "total_results": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/matkul/{id_matkul}": {
+      "get": {
+        "tags": ["matkul"],
+        "summary": "Mendapatkan mata kuliah dengan id",
+        "operationId": "getMatkulById",
+        "parameters": [
+          {
+            "name": "id_matkul",
+            "in": "path",
+            "description": "Id mata kuliah",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "clkus040m0000i5ulz0zesnfa"
+                    },
+                    "nama": {
+                      "type": "string",
+                      "example": "Dasar Pemrograman"
+                    },
+                    "semester": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "sks": {
+                      "type": "integer",
+                      "example": 4
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}

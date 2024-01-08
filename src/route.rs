@@ -3,7 +3,7 @@ use std::{sync::Arc, time::Duration};
 use axum::{error_handling::HandleErrorLayer, routing::get, BoxError, Router};
 use hyper::StatusCode;
 use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
-use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
+use tower_http::{services::ServeDir, timeout::TimeoutLayer, trace::TraceLayer};
 
 use crate::{
     db::{DbConnection, DbPool},
@@ -20,6 +20,8 @@ pub async fn get_routes() -> Router {
 
     Router::new()
         .route("/", get(services::home_service::home_handler))
+        .nest_service("/assets", ServeDir::new("assets"))
+        .route("/swagger", get(services::swagger_service::swagger_handler))
         .route("/v1/matkul", get(services::course_service::course_handler))
         .route(
             "/v1/matkul/:id_matkul",

@@ -5,6 +5,7 @@ pub mod class_service;
 pub mod course_service;
 pub mod home_service;
 pub mod lecturer_service;
+pub mod swagger_service;
 
 #[derive(Serialize)]
 pub struct SuccessResponse<T> {
@@ -12,4 +13,5 @@ pub struct SuccessResponse<T> {
     data: T,
 }
 
-pub type RouteHandler = Result<Json<Value>, (StatusCode, String)>;
+pub type JsonResponse = Json<Value>;
+pub type RouteHandler<T> = Result<T, (StatusCode, String)>;

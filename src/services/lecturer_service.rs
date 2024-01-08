@@ -9,12 +9,12 @@ use serde_json::json;
 
 use crate::{repository, route::AppState};
 
-use super::{RouteHandler, SuccessResponse};
+use super::{JsonResponse, RouteHandler, SuccessResponse};
 
 pub async fn lecturer_handler(
     State(state): State<Arc<AppState>>,
     Query(params): Query<HashMap<String, String>>,
-) -> RouteHandler {
+) -> RouteHandler<JsonResponse> {
     let lecturer_repo = repository::lecturer_repository::LecturerRepository::new(&state.db_pool);
     let mut lecturers = match lecturer_repo.get_lecturers().await {
         Ok(lecturers) => lecturers,
@@ -46,7 +46,7 @@ pub async fn lecturer_handler(
 pub async fn lecturer_with_id_handler(
     State(state): State<Arc<AppState>>,
     Path(id_dosen): Path<String>,
-) -> RouteHandler {
+) -> RouteHandler<JsonResponse> {
     let lecturer_repo = repository::lecturer_repository::LecturerRepository::new(&state.db_pool);
     let lecturer = match lecturer_repo.get_lecturers_by_id(&id_dosen).await {
         Ok(lecturer) => lecturer,
