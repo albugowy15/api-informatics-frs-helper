@@ -7,7 +7,7 @@ This project is a RESTful API designed to assist you gather more information rel
 - [X] `/v1/matkul` endpoint
 - [X] `/v1/dosen` endpoint
 - [X] `/v1/kelas` ednpoint
-- [ ] Rate limiter
+- [X] Rate limiter
 - [ ] Dockerize
 - [ ] Deploy to Fly.io
 - [X] Postman Documentation
