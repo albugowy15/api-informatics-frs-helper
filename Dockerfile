@@ -18,6 +18,7 @@ RUN adduser \
   appuser
 COPY --from=builder /api-informatics-frs-helper /usr/local/bin
 RUN chown appuser /usr/local/bin/api-informatics-frs-helper
+COPY --from=builder /app /opt/api-informatics-frs-helper
 RUN chown -R appuser /opt/api-informatics-frs-helper
 RUN touch /opt/.env
 USER appuser
