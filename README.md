@@ -2,16 +2,6 @@
 
 This project is a RESTful API designed to assist you gather more information related to Informatics FRS Helper. It provides several endpoints to access data related to courses (`/v1/matkul`), lecturers (`/v1/dosen`), and classes (`/v1/kelas`).
 
-## Progress 
-
-- [X] `/v1/matkul` endpoint
-- [X] `/v1/dosen` endpoint
-- [X] `/v1/kelas` ednpoint
-- [X] Rate limiter
-- [ ] Dockerize
-- [ ] Deploy to Fly.io
-- [X] Postman Documentation
-
 ## Endpoints
 
 ### /v1/matkul
