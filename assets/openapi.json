@@ -418,6 +418,166 @@
         }
       }
     },
+    "/matkul/dosen": {
+      "get": {
+        "tags": ["matkul"],
+        "summary": "Semua mata kuliah beserta dosennya",
+        "operationId": "getMatkuldWithDosen",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_results": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clkus040m0000i5ulz0zesnfa"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Dasar Pemrograman"
+                          },
+                          "semester": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "sks": {
+                            "type": "integer",
+                            "example": 4
+                          },
+                          "dosen": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "clfrssb60001mi5xwqnkn8uml"
+                                },
+                                "kode": {
+                                  "type": "string",
+                                  "example": "DS"
+                                },
+                                "nama": {
+                                  "type": "string",
+                                  "example": "Dwi Sunaryono, S.Kom., M.Kom."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/matkul/kelas": {
+      "get": {
+        "tags": ["matkul"],
+        "summary": "Semua mata kuliah beserta kelasnya",
+        "operationId": "getMatkulWithKelas",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_results": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clkus040m0000i5ulz0zesnfa"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Dasar Pemrograman"
+                          },
+                          "semester": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "sks": {
+                            "type": "integer",
+                            "example": 4
+                          },
+                          "kelas": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "cll81747q000gi56yos76ri3b"
+                                },
+                                "kode_kelas": {
+                                  "type": "string",
+                                  "example": "B"
+                                },
+                                "hari": {
+                                  "type": "string",
+                                  "example": "Senin"
+                                },
+                                "jam": {
+                                  "type": "string",
+                                  "example": "13.00-15.00"
+                                },
+                                "kode_dosen": {
+                                  "type": "string",
+                                  "example": "RA"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/matkul/{id_matkul}": {
       "get": {
         "tags": ["matkul"],
@@ -457,6 +617,162 @@
                     "sks": {
                       "type": "integer",
                       "example": 4
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/matkul/{id_matkul}/dosen": {
+      "get": {
+        "tags": ["matkul"],
+        "summary": "Mata kuliah dengan id beserta dosennya",
+        "operationId": "getMatkulByIdWithDosen",
+        "parameters": [
+          {
+            "name": "id_matkul",
+            "in": "path",
+            "description": "Id mata kuliah",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "clkus040m0000i5ulz0zesnfa"
+                    },
+                    "nama": {
+                      "type": "string",
+                      "example": "Dasar Pemrograman"
+                    },
+                    "semester": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "sks": {
+                      "type": "integer",
+                      "example": 4
+                    },
+                    "dosen": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clfrsvbbq002ei5xwki0o5nvw"
+                          },
+                          "kode": {
+                            "type": "string",
+                            "example": "BA"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Dr. Bilqis Amaliah, S.Kom.,M.Kom."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/matkul/{id_matkul}/kelas": {
+      "get": {
+        "tags": ["matkul"],
+        "summary": "Mata kuliah dengan id beserta kelasnya",
+        "operationId": "getMatkulByIdWithKelas",
+        "parameters": [
+          {
+            "name": "id_matkul",
+            "in": "path",
+            "description": "Id mata kuliah",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "clkus040m0000i5ulz0zesnfa"
+                    },
+                    "nama": {
+                      "type": "string",
+                      "example": "Dasar Pemrograman"
+                    },
+                    "semester": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "sks": {
+                      "type": "integer",
+                      "example": 4
+                    },
+                    "kelas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "cll81747q000gi56yos76ri3b"
+                          },
+                          "kode_kelas": {
+                            "type": "string",
+                            "example": "B"
+                          },
+                          "hari": {
+                            "type": "string",
+                            "example": "Senin"
+                          },
+                          "jam": {
+                            "type": "string",
+                            "example": "13.00-15.00"
+                          },
+                          "kode_dosen": {
+                            "type": "string",
+                            "example": "RA"
+                          }
+                        }
+                      }
                     }
                   }
                 }
