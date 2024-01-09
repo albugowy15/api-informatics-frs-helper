@@ -2,29 +2,6 @@
 
 This project is a RESTful API designed to assist you gather more information related to Informatics FRS Helper. It provides several endpoints to access data related to courses (`/v1/matkul`), lecturers (`/v1/dosen`), and classes (`/v1/kelas`).
 
-## Endpoints
-
-### /v1/matkul
-- Dynamic Path : `/v1/matkul/:id_matkul`
-- Query params:
-    - `nama` (string)
-    - `semester` (integer)
-    - `sks` (integer)
-
-### /v1/dosen
-- Dynamic Path : `/v1/dosen/:id_dosen`
-- Query params: 
-    - `nama` (string)
-    - `kode` (string)
-
-### /v1/kelas
-- Dynamic Path : `/v1/kelas/:id_kelas`
-- Query params: 
-    - `hari` (string)
-    - `jam` (string)
-    - `matkul` (string)
-    - `kode_dosen` (string)
-
 ## Documentation
 
 For more detailed information about the API and its usage, please refer to this [Postman Documentation](https://documenter.getpostman.com/view/30505077/2s9YsJBCJo). Postman is a great tool for interacting with our API endpoints. To get started, simply click the button below to import the pre-configured collection into your Postman application.
