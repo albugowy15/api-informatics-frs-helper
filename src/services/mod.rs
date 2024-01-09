@@ -15,3 +15,22 @@ pub struct SuccessResponse<T> {
 
 pub type JsonResponse = Json<Value>;
 pub type RouteHandler<T> = Result<T, (StatusCode, String)>;
+
+pub enum ErrorViews<'a> {
+    Internal,
+    NotFound(&'a str),
+    BadRequest(String),
+}
+
+fn display_err(variant: ErrorViews) -> (StatusCode, String) {
+    match variant {
+        ErrorViews::Internal => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            String::from("Internal server error"),
+        ),
+        ErrorViews::NotFound(field) => {
+            (StatusCode::NOT_FOUND, format!("{} tidak ditemukan", field))
+        }
+        ErrorViews::BadRequest(message) => (StatusCode::BAD_REQUEST, message),
+    }
+}

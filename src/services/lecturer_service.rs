@@ -2,14 +2,13 @@ use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     extract::{Path, Query, State},
-    http::StatusCode,
     Json,
 };
 use serde_json::json;
 
 use crate::{repository, route::AppState};
 
-use super::{JsonResponse, RouteHandler, SuccessResponse};
+use super::{display_err, ErrorViews, JsonResponse, RouteHandler, SuccessResponse};
 
 pub async fn lecturer_handler(
     State(state): State<Arc<AppState>>,
@@ -19,10 +18,7 @@ pub async fn lecturer_handler(
     let mut lecturers = match lecturer_repo.get_lecturers().await {
         Ok(lecturers) => lecturers,
         _ => {
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                String::from("Internal server error"),
-            ));
+            return Err(display_err(ErrorViews::Internal));
         }
     };
     if let Some(fullname_param) = params.get("nama") {
@@ -48,18 +44,13 @@ pub async fn lecturer_with_id_handler(
     Path(id_dosen): Path<String>,
 ) -> RouteHandler<JsonResponse> {
     let lecturer_repo = repository::lecturer_repository::LecturerRepository::new(&state.db_pool);
-    let lecturer = match lecturer_repo.get_lecturers_by_id(&id_dosen).await {
+    let lecturer = match lecturer_repo.get_lecturer_by_id(&id_dosen).await {
         Ok(lecturer) => lecturer,
         Err(err) => match err {
             sqlx::Error::RowNotFound => {
-                return Err((StatusCode::NOT_FOUND, String::from("Dosen tidak ditemukan")));
+                return Err(display_err(ErrorViews::NotFound("Dosen")));
             }
-            _ => {
-                return Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    String::from("Internal server error"),
-                ))
-            }
+            _ => return Err(display_err(ErrorViews::Internal)),
         },
     };
     Ok(Json(json!(lecturer)))

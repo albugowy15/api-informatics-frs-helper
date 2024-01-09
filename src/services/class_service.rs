@@ -2,28 +2,22 @@ use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     extract::{Path, Query, State},
-    http::StatusCode,
     Json,
 };
 use serde_json::json;
 
 use crate::{repository, route::AppState};
 
-use super::{JsonResponse, RouteHandler, SuccessResponse};
+use super::{display_err, ErrorViews, JsonResponse, RouteHandler, SuccessResponse};
 
-pub async fn class_handler(
+pub async fn classes(
     State(app_state): State<Arc<AppState>>,
     Query(params): Query<HashMap<String, String>>,
 ) -> RouteHandler<JsonResponse> {
     let class_repo = repository::class_repository::ClassRepository::new(&app_state.db_pool);
     let mut classes = match class_repo.get_classes().await {
         Ok(classes) => classes,
-        _ => {
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                String::from("Internal Server Error"),
-            ))
-        }
+        _ => return Err(display_err(ErrorViews::Internal)),
     };
 
     if let Some(day_param) = params.get("hari") {
@@ -38,16 +32,14 @@ pub async fn class_handler(
     if let Some(lecturer_code_param) = params.get("kode_dosen") {
         classes.retain(|x| x.kode_dosen.to_lowercase() == *lecturer_code_param.to_lowercase());
     }
-
     let response = SuccessResponse {
         total_results: classes.len(),
         data: classes,
     };
-
     Ok(Json(json!(response)))
 }
 
-pub async fn class_by_id_handler(
+pub async fn class_by_id(
     State(app_state): State<Arc<AppState>>,
     Path(id_kelas): Path<String>,
 ) -> RouteHandler<JsonResponse> {
@@ -55,14 +47,9 @@ pub async fn class_by_id_handler(
     let class = match class_repo.get_class_by_id(&id_kelas).await {
         Ok(class) => class,
         Err(err) => match err {
-            sqlx::Error::RowNotFound => {
-                return Err((StatusCode::NOT_FOUND, String::from("Kelas tidak ditemukan")))
-            }
+            sqlx::Error::RowNotFound => return Err(display_err(ErrorViews::NotFound("Kelas"))),
             _ => {
-                return Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    String::from("Internal Server Error"),
-                ));
+                return Err(display_err(ErrorViews::Internal));
             }
         },
     };

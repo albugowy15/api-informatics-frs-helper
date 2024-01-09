@@ -1,9 +1,9 @@
 use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-pub mod db;
+mod db;
 pub mod repository;
-pub mod route;
+mod route;
 pub mod services;
 
 #[tokio::main]
