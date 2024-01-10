@@ -3,6 +3,8 @@ use sqlx::Row;
 
 use crate::db::DbPool;
 
+use super::{class_repository::ClassWithSubjectName, course_repository::Course};
+
 pub struct LecturerRepository<'a> {
     db: &'a DbPool,
 }
@@ -48,6 +50,65 @@ impl<'a> LecturerRepository<'a> {
             });
         });
         Ok(lecturers)
+    }
+
+    pub async fn get_lecturers_with_courses(
+        &self,
+    ) -> Result<Vec<LecturerWithCourses<Vec<Course>>>, sqlx::Error> {
+        let rows = sqlx::query(
+            "select l.id, l.code, l.fullname,
+                    concat('[',
+                        group_concat(
+                            distinct json_object('id', m.id, 'matkul', m.name, 'semester', m.semester, 'sks', m.sks)
+                        ),
+                    ']') as matkul
+                    from Lecturer l
+                    inner join _ClassToLecturer cl on cl.B = l.id
+                    inner join Class c on c.id = cl.A
+                    inner join Matkul m on m.id = c.matkulId
+                    group by l.id
+                    order by l.code asc"
+            ).fetch_all(self.db).await?;
+        let mut lecturers_courses = Vec::with_capacity(rows.len());
+        rows.into_iter().for_each(|row| {
+            lecturers_courses.push(LecturerWithCourses::<Vec<Course>> {
+                id: row.get("id"),
+                kode: row.get("code"),
+                nama: row.get("fullname"),
+                matkul: serde_json::from_str(row.get("matkul")).unwrap_or_default(),
+            })
+        });
+        Ok(lecturers_courses)
+    }
+
+    pub async fn get_lecturers_with_classes(
+        &self,
+    ) -> Result<Vec<LecturerWithCourses<Vec<ClassWithSubjectName>>>, sqlx::Error> {
+        let rows = sqlx::query(
+            "select l.id, l.code, l.fullname,
+                    concat('[',
+                        group_concat(
+                            distinct json_object('id', c.id, 'matkul', m.name, 'kode_kelas', c.code, 'hari', c.day, 'jam', s.session_time)
+                        ),
+                    ']') as kelas
+                    from Lecturer l
+                    inner join _ClassToLecturer cl on cl.B = l.id
+                    inner join Class c on c.id = cl.A
+                    inner join Session s on s.id = c.sessionId
+                    inner join Matkul m on m.id = c.matkulId
+                    group by l.id
+                    order by l.code asc"
+            ).fetch_all(self.db).await?;
+        let mut lecturers_classes = Vec::with_capacity(rows.len());
+        rows.into_iter().for_each(|row| {
+            lecturers_classes.push(LecturerWithCourses::<Vec<ClassWithSubjectName>> {
+                id: row.get("id"),
+                kode: row.get("code"),
+                nama: row.get("fullname"),
+                matkul: serde_json::from_str(row.get("kelas")).unwrap_or_default(),
+            })
+        });
+        Ok(lecturers_classes)
     }
 
     pub async fn get_lecturer_by_id(&self, lecturer_id: &String) -> Result<Lecturer, sqlx::Error> {

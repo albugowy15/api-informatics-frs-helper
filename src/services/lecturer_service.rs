@@ -45,6 +45,34 @@ pub async fn lecturers(
     })))
 }
 
+pub async fn lecturers_with_courses(
+    State(state): State<Arc<AppState>>,
+) -> RouteHandler<JsonResponse> {
+    let lecturer_repo = LecturerRepository::new(&state.db_pool);
+    let lecturers_courses = match lecturer_repo.get_lecturers_with_courses().await {
+        Ok(data) => data,
+        _ => return Err(display_err(ErrorViews::Internal)),
+    };
+    Ok(Json(json!(SuccessResponse {
+        total_results: lecturers_courses.len(),
+        data: lecturers_courses
+    })))
+}
+
+pub async fn lecturers_with_classes(
+    State(state): State<Arc<AppState>>,
+) -> RouteHandler<JsonResponse> {
+    let lecturer_repo = LecturerRepository::new(&state.db_pool);
+    let lecturers_classes = match lecturer_repo.get_lecturers_with_classes().await {
+        Ok(data) => data,
+        _ => return Err(display_err(ErrorViews::Internal)),
+    };
+    Ok(Json(json!(SuccessResponse {
+        total_results: lecturers_classes.len(),
+        data: lecturers_classes
+    })))
+}
+
 pub async fn lecturer_by_id(
     State(state): State<Arc<AppState>>,
     Path(id_dosen): Path<String>,
