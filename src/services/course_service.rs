@@ -32,7 +32,7 @@ pub async fn courses(
     if let Some(course_name_param) = params.get("nama") {
         courses.retain(|course| {
             course
-                .nama
+                .matkul
                 .to_lowercase()
                 .contains(&course_name_param.to_lowercase())
         })
@@ -124,7 +124,7 @@ pub async fn course_by_id_with_classes(
         .unwrap_or_default();
     let response = CourseWithClass::<Vec<CompactClass>> {
         id: course.id,
-        nama: course.nama,
+        matkul: course.matkul,
         semester: course.semester,
         sks: course.sks,
         kelas: classes,
@@ -148,7 +148,7 @@ pub async fn course_by_id_with_lecturers(
         .unwrap_or_default();
     let response = CourseWithLecturer::<Vec<Lecturer>> {
         id: course.id,
-        nama: course.nama,
+        matkul: course.matkul,
         semester: course.semester,
         sks: course.sks,
         dosen: lecturers,
