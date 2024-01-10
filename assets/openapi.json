@@ -39,7 +39,7 @@
     "/dosen": {
       "get": {
         "tags": ["dosen"],
-        "summary": "Mendapatkan informasi semua dosen",
+        "summary": "Semua dosen",
         "operationId": "getDosen",
         "parameters": [
           {
@@ -112,7 +112,7 @@
     "/dosen/{id_dosen}": {
       "get": {
         "tags": ["dosen"],
-        "summary": "Mendapatkan dosen dengan id",
+        "summary": "Dosen dengan id",
         "operationId": "getDosenById",
         "parameters": [
           {
@@ -144,6 +144,84 @@
                     "nama": {
                       "type": "string",
                       "example": "Bagus Jati Santoso, S.Kom., Ph.D."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/dosen/{id_dosen}/kelas": {
+      "get": {
+        "tags": ["dosen"],
+        "summary": "Dosen dengan id beserta kelas",
+        "operationId": "getDosenByIdWithKelas",
+        "parameters": [
+          {
+            "name": "id_dosen",
+            "in": "path",
+            "description": "Id dosen",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "clfrsn7xt000ci5xwf2hehw0e"
+                    },
+                    "kode": {
+                      "type": "string",
+                      "example": "BJ"
+                    },
+                    "nama": {
+                      "type": "string",
+                      "example": "Bagus Jati Santoso, S.Kom., Ph.D."
+                    },
+                    "kelas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "cll8173md0004i56yjtfxwzza"
+                          },
+                          "matkul": {
+                            "type": "Aljabar Linier",
+                            "example": "A"
+                          },
+                          "kode_kelas": {
+                            "type": "string",
+                            "example": "A"
+                          },
+                          "hari": {
+                            "type": "string",
+                            "example": "Senin"
+                          },
+                          "jam": {
+                            "type": "string",
+                            "example": "07.00-09.00"
+                          }
+                        }
+                      }
                     }
                   }
                 }
