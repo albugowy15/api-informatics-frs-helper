@@ -15,11 +15,19 @@ pub struct Lecturer {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct LecturerWithClasses<TKelas> {
+pub struct LecturerWithClasses<TClasses> {
     pub id: String,
     pub kode: String,
     pub nama: String,
-    pub kelas: TKelas,
+    pub kelas: TClasses,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct LecturerWithCourses<TCourses> {
+    pub id: String,
+    pub kode: String,
+    pub nama: String,
+    pub matkul: TCourses,
 }
 
 impl<'a> LecturerRepository<'a> {

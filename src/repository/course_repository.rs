@@ -12,7 +12,7 @@ pub struct CourseRepository<'a> {
 #[derive(Serialize)]
 pub struct Course {
     pub id: String,
-    pub nama: String,
+    pub matkul: String,
     pub semester: i8,
     pub sks: i8,
 }
@@ -20,7 +20,7 @@ pub struct Course {
 #[derive(Serialize)]
 pub struct CourseWithLecturer<TLecturer> {
     pub id: String,
-    pub nama: String,
+    pub matkul: String,
     pub semester: i8,
     pub sks: i8,
     pub dosen: TLecturer,
@@ -29,7 +29,7 @@ pub struct CourseWithLecturer<TLecturer> {
 #[derive(Serialize)]
 pub struct CourseWithClass<TClass> {
     pub id: String,
-    pub nama: String,
+    pub matkul: String,
     pub semester: i8,
     pub sks: i8,
     pub kelas: TClass,
@@ -50,7 +50,7 @@ impl<'a> CourseRepository<'a> {
         rows.into_iter().for_each(|row| {
             courses.push(Course {
                 id: row.get("id"),
-                nama: row.get("name"),
+                matkul: row.get("name"),
                 semester: row.get("semester"),
                 sks: row.get("sks"),
             })
@@ -66,10 +66,39 @@ impl<'a> CourseRepository<'a> {
                 .await?;
         Ok(Course {
             id: row.get("id"),
-            nama: row.get("name"),
+            matkul: row.get("name"),
             semester: row.get("semester"),
             sks: row.get("sks"),
         })
+    }
+
+    pub async fn get_courses_by_lecturer_id(
+        &self,
+        lecturer_id: &String,
+    ) -> Result<Vec<Course>, sqlx::Error> {
+        let rows = sqlx::query(
+            "select m.id, m.name, m.semester, m.sks
+                    from Matkul m
+                    inner join Class c on c.matkulId = m.id
+                    inner join _ClassToLecturer cl on cl.A = c.id
+                    inner join Lecturer l on l.id = cl.B
+                    where l.id = ?
+                    group by m.id
+                    order by m.semester asc",
+        )
+        .bind(lecturer_id)
+        .fetch_all(self.db)
+        .await?;
+        let mut courses: Vec<Course> = Vec::with_capacity(rows.len());
+        rows.into_iter().for_each(|row| {
+            courses.push(Course {
+                id: row.get("id"),
+                matkul: row.get("name"),
+                semester: row.get("semester"),
+                sks: row.get("sks"),
+            })
+        });
+        Ok(courses)
     }
 
     pub async fn get_courses_with_lecturers(
@@ -98,7 +127,7 @@ impl<'a> CourseRepository<'a> {
         rows.into_iter().for_each(|row| {
             courses_lecturers.push(CourseWithLecturer {
                 id: row.get("id"),
-                nama: row.get("name"),
+                matkul: row.get("name"),
                 semester: row.get("semester"),
                 sks: row.get("sks"),
                 dosen: serde_json::from_str(row.get("lecturers")).unwrap_or_default(),
@@ -136,7 +165,7 @@ impl<'a> CourseRepository<'a> {
         rows.into_iter().for_each(|row| {
             courses_classes.push(CourseWithClass::<Vec<CompactClass>> {
                 id: row.get("id"),
-                nama: row.get("name"),
+                matkul: row.get("name"),
                 semester: row.get("semester"),
                 sks: row.get("sks"),
                 kelas: serde_json::from_str::<Vec<CompactClass>>(row.get("kelas"))

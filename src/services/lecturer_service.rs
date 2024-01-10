@@ -9,7 +9,8 @@ use serde_json::json;
 use crate::{
     repository::{
         class_repository::{ClassRepository, ClassWithSubjectName},
-        lecturer_repository::{LecturerRepository, LecturerWithClasses},
+        course_repository::{Course, CourseRepository},
+        lecturer_repository::{LecturerRepository, LecturerWithClasses, LecturerWithCourses},
     },
     route::AppState,
 };
@@ -83,6 +84,32 @@ pub async fn lecturer_by_id_with_classes(
         nama: lecturer.nama,
         kode: lecturer.kode,
         kelas: classes,
+    };
+    Ok(Json(json!(response)))
+}
+
+pub async fn lecturer_by_id_with_courses(
+    State(state): State<Arc<AppState>>,
+    Path(id_dosen): Path<String>,
+) -> RouteHandler<JsonResponse> {
+    let lecturer_repo = LecturerRepository::new(&state.db_pool);
+    let lecturer = match lecturer_repo.get_lecturer_by_id(&id_dosen).await {
+        Ok(data) => data,
+        Err(err) => match err {
+            sqlx::Error::RowNotFound => return Err(display_err(ErrorViews::NotFound("Dosen"))),
+            _ => return Err(display_err(ErrorViews::Internal)),
+        },
+    };
+    let course_repo = CourseRepository::new(&state.db_pool);
+    let courses = course_repo
+        .get_courses_by_lecturer_id(&lecturer.id)
+        .await
+        .unwrap_or_default();
+    let response = LecturerWithCourses::<Vec<Course>> {
+        id: lecturer.id,
+        kode: lecturer.kode,
+        nama: lecturer.nama,
+        matkul: courses,
     };
     Ok(Json(json!(response)))
 }
