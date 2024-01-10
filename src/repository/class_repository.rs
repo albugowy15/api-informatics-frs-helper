@@ -27,6 +27,15 @@ pub struct CompactClass {
     pub kode_dosen: String,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct ClassWithSubjectName {
+    id: String,
+    matkul: String,
+    kode_kelas: String,
+    hari: String,
+    jam: String,
+}
+
 impl<'a> ClassRepository<'a> {
     pub fn new(db_connection: &'a DbPool) -> ClassRepository {
         ClassRepository { db: db_connection }
@@ -112,6 +121,36 @@ impl<'a> ClassRepository<'a> {
                 kode_dosen: row.get("kode_dosen"),
                 kode_kelas: row.get("kode_kelas"),
             });
+        });
+        Ok(classes)
+    }
+
+    pub async fn get_classes_by_lecturer_id(
+        &self,
+        lecturer_id: &String,
+    ) -> Result<Vec<ClassWithSubjectName>, sqlx::Error> {
+        let rows = sqlx::query(
+            "select c.id, m.name as matkul, c.code as kode_kelas, c.day, s.session_time as jam
+                    from Class c
+                    inner join Session s on s.id = c.sessionId 
+                    inner join Matkul m on m.id = c.matkulId 
+                    inner join _ClassToLecturer cl on cl.A = c.id 
+                    inner join Lecturer l on l.id = cl.B
+                    where l.id = ?
+                    order by c.code asc",
+        )
+        .bind(lecturer_id)
+        .fetch_all(self.db)
+        .await?;
+        let mut classes: Vec<ClassWithSubjectName> = Vec::with_capacity(rows.len());
+        rows.into_iter().for_each(|row| {
+            classes.push(ClassWithSubjectName {
+                id: row.get("id"),
+                matkul: row.get("matkul"),
+                kode_kelas: row.get("kode_kelas"),
+                hari: row.get("day"),
+                jam: row.get("jam"),
+            })
         });
         Ok(classes)
     }
