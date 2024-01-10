@@ -109,6 +109,164 @@
         }
       }
     },
+    "/dosen/matkul": {
+      "get": {
+        "tags": ["dosen"],
+        "summary": "Semua dosen dengan matkul",
+        "operationId": "getDosenWithMatkul",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "name": "data",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clfrsn7xt000ci5xwf2hehw0e"
+                          },
+                          "kode": {
+                            "type": "string",
+                            "example": "BJ"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Bagus Jati Santoso, S.Kom., Ph.D."
+                          },
+                          "matkul": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "clkus040m0000i5ulz0zesnfa"
+                                },
+                                "matkul": {
+                                  "type": "string",
+                                  "example": "Dasar Pemrograman"
+                                },
+                                "semester": {
+                                  "type": "integer",
+                                  "example": 1
+                                },
+                                "sks": {
+                                  "type": "integer",
+                                  "example": 4
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total_results": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/dosen/kelas": {
+      "get": {
+        "tags": ["dosen"],
+        "summary": "Semua dosen dengan kelas",
+        "operationId": "getDosenWithKelas",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "name": "data",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "clfrsn7xt000ci5xwf2hehw0e"
+                          },
+                          "kode": {
+                            "type": "string",
+                            "example": "BJ"
+                          },
+                          "nama": {
+                            "type": "string",
+                            "example": "Bagus Jati Santoso, S.Kom., Ph.D."
+                          },
+                          "kelas": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "cll8173md0004i56yjtfxwzza"
+                                },
+                                "matkul": {
+                                  "type": "Aljabar Linier",
+                                  "example": "A"
+                                },
+                                "kode_kelas": {
+                                  "type": "string",
+                                  "example": "A"
+                                },
+                                "hari": {
+                                  "type": "string",
+                                  "example": "Senin"
+                                },
+                                "jam": {
+                                  "type": "string",
+                                  "example": "07.00-09.00"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total_results": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/dosen/{id_dosen}": {
       "get": {
         "tags": ["dosen"],
