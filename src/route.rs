@@ -43,19 +43,20 @@ pub async fn get_routes() -> Router {
         )
         .route(
             "/v1/matkul/:id_matkul/dosen",
-            get(services::course_service::course_with_lecturers_by_id),
+            get(services::course_service::course_by_id_with_lecturers),
         )
         .route(
             "/v1/matkul/:id_matkul/kelas",
-            get(services::course_service::course_with_classes_by_id),
+            get(services::course_service::course_by_id_with_classes),
         )
-        .route(
-            "/v1/dosen",
-            get(services::lecturer_service::lecturer_handler),
-        )
+        .route("/v1/dosen", get(services::lecturer_service::lecturers))
         .route(
             "/v1/dosen/:id_dosen",
-            get(services::lecturer_service::lecturer_with_id_handler),
+            get(services::lecturer_service::lecturer_by_id),
+        )
+        .route(
+            "/v1/dosen/:id_dosen/kelas",
+            get(services::lecturer_service::lecturer_by_id_with_classes),
         )
         .route("/v1/kelas", get(services::class_service::classes))
         .route(

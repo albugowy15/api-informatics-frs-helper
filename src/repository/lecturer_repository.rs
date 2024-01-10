@@ -14,6 +14,14 @@ pub struct Lecturer {
     pub nama: String,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct LecturerWithClasses<TKelas> {
+    pub id: String,
+    pub kode: String,
+    pub nama: String,
+    pub kelas: TKelas,
+}
+
 impl<'a> LecturerRepository<'a> {
     pub fn new(db_connection: &'a DbPool) -> LecturerRepository {
         LecturerRepository { db: db_connection }

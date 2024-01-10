@@ -59,11 +59,10 @@ pub async fn courses(
         };
         courses.retain(|course| course.sks == parse_sks_param)
     }
-    let response = SuccessResponse {
+    Ok(Json(json!(SuccessResponse {
         total_results: courses.len(),
         data: courses,
-    };
-    Ok(Json(json!(response)))
+    })))
 }
 
 pub async fn course_by_id(
@@ -89,11 +88,10 @@ pub async fn courses_with_lecturers(
         Ok(res) => res,
         _ => return Err(display_err(ErrorViews::Internal)),
     };
-    let response = SuccessResponse {
+    Ok(Json(json!(SuccessResponse {
         total_results: courses_lecturers.len(),
         data: courses_lecturers,
-    };
-    Ok(Json(json!(response)))
+    })))
 }
 
 pub async fn courses_with_classes(
@@ -104,14 +102,13 @@ pub async fn courses_with_classes(
         Ok(res) => res,
         _ => return Err(display_err(ErrorViews::Internal)),
     };
-    let response = SuccessResponse {
+    Ok(Json(json!(SuccessResponse {
         total_results: courses_classes.len(),
         data: courses_classes,
-    };
-    Ok(Json(json!(response)))
+    })))
 }
 
-pub async fn course_with_classes_by_id(
+pub async fn course_by_id_with_classes(
     State(state): State<Arc<AppState>>,
     Path(id_matkul): Path<String>,
 ) -> RouteHandler<JsonResponse> {
@@ -121,11 +118,11 @@ pub async fn course_with_classes_by_id(
         _ => return Err(display_err(ErrorViews::Internal)),
     };
     let class_repo = ClassRepository::new(&state.db_pool);
-    let classes = match class_repo.get_classes_by_course_id(&course.id).await {
-        Ok(res) => res,
-        _ => return Err(display_err(ErrorViews::Internal)),
-    };
-    let response: CourseWithClass<Vec<CompactClass>> = CourseWithClass {
+    let classes = class_repo
+        .get_classes_by_course_id(&course.id)
+        .await
+        .unwrap_or_default();
+    let response = CourseWithClass::<Vec<CompactClass>> {
         id: course.id,
         nama: course.nama,
         semester: course.semester,
@@ -135,7 +132,7 @@ pub async fn course_with_classes_by_id(
     Ok(Json(json!(response)))
 }
 
-pub async fn course_with_lecturers_by_id(
+pub async fn course_by_id_with_lecturers(
     State(state): State<Arc<AppState>>,
     Path(id_matkul): Path<String>,
 ) -> RouteHandler<JsonResponse> {
@@ -145,11 +142,11 @@ pub async fn course_with_lecturers_by_id(
         _ => return Err(display_err(ErrorViews::Internal)),
     };
     let lecturer_repo = LecturerRepository::new(&state.db_pool);
-    let lecturers = match lecturer_repo.get_lecturers_by_course_id(&course.id).await {
-        Ok(res) => res,
-        _ => return Err(display_err(ErrorViews::Internal)),
-    };
-    let response: CourseWithLecturer<Vec<Lecturer>> = CourseWithLecturer {
+    let lecturers = lecturer_repo
+        .get_lecturers_by_course_id(&course.id)
+        .await
+        .unwrap_or_default();
+    let response = CourseWithLecturer::<Vec<Lecturer>> {
         id: course.id,
         nama: course.nama,
         semester: course.semester,
