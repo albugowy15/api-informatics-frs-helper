@@ -25,7 +25,7 @@ pub async fn get_routes() -> Router {
     let shared_state = Arc::new(AppState { db_pool: db });
 
     Router::new()
-        .route("/", get(services::home_service::home_handler))
+        .route("/", get(services::home_service::home))
         .nest_service("/assets", ServeDir::new("assets"))
         .route("/swagger", get(services::swagger_service::swagger_handler))
         .route("/v1/matkul", get(services::course_service::courses))
