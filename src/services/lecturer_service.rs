@@ -1,21 +1,21 @@
 use std::{collections::HashMap, sync::Arc};
 
-use axum::{
-    extract::{Path, Query, State},
-    Json,
-};
-use serde_json::json;
+use axum::extract::{Path, Query, State};
 
 use crate::{
+    model::{
+        class_model::ClassWithSubjectName,
+        course_model::Course,
+        lecturer_model::{LecturerWithClasses, LecturerWithCourses},
+    },
     repository::{
-        class_repository::{ClassRepository, ClassWithSubjectName},
-        course_repository::{Course, CourseRepository},
-        lecturer_repository::{LecturerRepository, LecturerWithClasses, LecturerWithCourses},
+        class_repository::ClassRepository, course_repository::CourseRepository,
+        lecturer_repository::LecturerRepository,
     },
     route::AppState,
 };
 
-use super::{display_err, ErrorViews, JsonResponse, RouteHandler, SuccessResponse};
+use super::{display_err, DataResponse, ErrorViews, IntoJson, JsonResponse, RouteHandler};
 
 pub async fn lecturers(
     State(state): State<Arc<AppState>>,
@@ -39,10 +39,7 @@ pub async fn lecturers(
     if let Some(code_param) = params.get("kode") {
         lecturers.retain(|lecturer| lecturer.kode.to_lowercase() == *code_param.to_lowercase());
     }
-    Ok(Json(json!(SuccessResponse {
-        total_results: lecturers.len(),
-        data: lecturers,
-    })))
+    Ok(DataResponse::new(lecturers.len(), lecturers).into_json())
 }
 
 pub async fn lecturers_with_courses(
@@ -53,10 +50,7 @@ pub async fn lecturers_with_courses(
         Ok(data) => data,
         _ => return Err(display_err(ErrorViews::Internal)),
     };
-    Ok(Json(json!(SuccessResponse {
-        total_results: lecturers_courses.len(),
-        data: lecturers_courses
-    })))
+    Ok(DataResponse::new(lecturers_courses.len(), lecturers_courses).into_json())
 }
 
 pub async fn lecturers_with_classes(
@@ -67,10 +61,7 @@ pub async fn lecturers_with_classes(
         Ok(data) => data,
         _ => return Err(display_err(ErrorViews::Internal)),
     };
-    Ok(Json(json!(SuccessResponse {
-        total_results: lecturers_classes.len(),
-        data: lecturers_classes
-    })))
+    Ok(DataResponse::new(lecturers_classes.len(), lecturers_classes).into_json())
 }
 
 pub async fn lecturer_by_id(
@@ -87,7 +78,7 @@ pub async fn lecturer_by_id(
             _ => return Err(display_err(ErrorViews::Internal)),
         },
     };
-    Ok(Json(json!(lecturer)))
+    Ok(lecturer.into_json())
 }
 
 pub async fn lecturer_by_id_with_classes(
@@ -113,7 +104,7 @@ pub async fn lecturer_by_id_with_classes(
         kode: lecturer.kode,
         kelas: classes,
     };
-    Ok(Json(json!(response)))
+    Ok(response.into_json())
 }
 
 pub async fn lecturer_by_id_with_courses(
@@ -139,5 +130,5 @@ pub async fn lecturer_by_id_with_courses(
         nama: lecturer.nama,
         matkul: courses,
     };
-    Ok(Json(json!(response)))
+    Ok(response.into_json())
 }

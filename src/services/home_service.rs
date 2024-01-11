@@ -1,3 +1,3 @@
-pub async fn home_handler() -> &'static str {
+pub async fn home() -> &'static str {
     "Welcome to Informatics FRS Helper API"
 }

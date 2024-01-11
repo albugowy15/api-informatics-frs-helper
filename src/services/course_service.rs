@@ -1,22 +1,22 @@
 use std::{collections::HashMap, sync::Arc};
 
-use axum::{
-    extract::{Path, Query, State},
-    Json,
-};
-use serde_json::json;
+use axum::extract::{Path, Query, State};
 
-use super::ErrorViews;
+use super::{DataResponse, ErrorViews, IntoJson};
 use crate::{
+    model::{
+        class_model::CompactClass,
+        course_model::{CourseWithClass, CourseWithLecturer},
+        lecturer_model::Lecturer,
+    },
     repository::{
-        class_repository::{ClassRepository, CompactClass},
-        course_repository::{CourseRepository, CourseWithClass, CourseWithLecturer},
-        lecturer_repository::{Lecturer, LecturerRepository},
+        class_repository::ClassRepository, course_repository::CourseRepository,
+        lecturer_repository::LecturerRepository,
     },
     route::AppState,
 };
 
-use super::{display_err, JsonResponse, RouteHandler, SuccessResponse};
+use super::{display_err, JsonResponse, RouteHandler};
 
 pub async fn courses(
     State(state): State<Arc<AppState>>,
@@ -59,10 +59,7 @@ pub async fn courses(
         };
         courses.retain(|course| course.sks == parse_sks_param)
     }
-    Ok(Json(json!(SuccessResponse {
-        total_results: courses.len(),
-        data: courses,
-    })))
+    Ok(DataResponse::new(courses.len(), courses).into_json())
 }
 
 pub async fn course_by_id(
@@ -77,7 +74,7 @@ pub async fn course_by_id(
             _ => return Err(display_err(ErrorViews::Internal)),
         },
     };
-    Ok(Json(json!(course)))
+    Ok(course.into_json())
 }
 
 pub async fn courses_with_lecturers(
@@ -88,10 +85,7 @@ pub async fn courses_with_lecturers(
         Ok(res) => res,
         _ => return Err(display_err(ErrorViews::Internal)),
     };
-    Ok(Json(json!(SuccessResponse {
-        total_results: courses_lecturers.len(),
-        data: courses_lecturers,
-    })))
+    Ok(DataResponse::new(courses_lecturers.len(), courses_lecturers).into_json())
 }
 
 pub async fn courses_with_classes(
@@ -102,10 +96,7 @@ pub async fn courses_with_classes(
         Ok(res) => res,
         _ => return Err(display_err(ErrorViews::Internal)),
     };
-    Ok(Json(json!(SuccessResponse {
-        total_results: courses_classes.len(),
-        data: courses_classes,
-    })))
+    Ok(DataResponse::new(courses_classes.len(), courses_classes).into_json())
 }
 
 pub async fn course_by_id_with_classes(
@@ -129,7 +120,7 @@ pub async fn course_by_id_with_classes(
         sks: course.sks,
         kelas: classes,
     };
-    Ok(Json(json!(response)))
+    Ok(response.into_json())
 }
 
 pub async fn course_by_id_with_lecturers(
@@ -153,5 +144,5 @@ pub async fn course_by_id_with_lecturers(
         sks: course.sks,
         dosen: lecturers,
     };
-    Ok(Json(json!(response)))
+    Ok(response.into_json())
 }
