@@ -7,3 +7,7 @@ pub mod lecturer_model;
 pub trait FromRow {
     fn from_row(row: &MySqlRow) -> Self;
 }
+
+pub trait FromRows {
+    fn from_rows(rows: &[MySqlRow]) -> Self;
+}

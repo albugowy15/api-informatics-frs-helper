@@ -4,7 +4,7 @@ use crate::{
         class_model::CompactClass,
         course_model::{Course, CourseWithClass, CourseWithLecturer},
         lecturer_model::Lecturer,
-        FromRow,
+        FromRow, FromRows,
     },
 };
 
@@ -23,10 +23,7 @@ impl<'a> CourseRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        let mut courses = Vec::with_capacity(rows.len());
-        rows.into_iter()
-            .for_each(|row| courses.push(Course::from_row(&row)));
-        Ok(courses)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_course_by_id(&self, course_id: &String) -> Result<Course, sqlx::Error> {
@@ -56,10 +53,7 @@ impl<'a> CourseRepository<'a> {
         .bind(lecturer_id)
         .fetch_all(self.db)
         .await?;
-        let mut courses: Vec<Course> = Vec::with_capacity(rows.len());
-        rows.into_iter()
-            .for_each(|row| courses.push(Course::from_row(&row)));
-        Ok(courses)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_courses_with_lecturers(
@@ -83,11 +77,7 @@ impl<'a> CourseRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        let mut courses_lecturers: Vec<CourseWithLecturer<Vec<Lecturer>>> =
-            Vec::with_capacity(rows.len());
-        rows.into_iter()
-            .for_each(|row| courses_lecturers.push(CourseWithLecturer::from_row(&row)));
-        Ok(courses_lecturers)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_courses_with_classes(
@@ -114,11 +104,6 @@ impl<'a> CourseRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        let mut courses_classes: Vec<CourseWithClass<Vec<CompactClass>>> =
-            Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            courses_classes.push(CourseWithClass::<Vec<CompactClass>>::from_row(&row))
-        });
-        Ok(courses_classes)
+        Ok(Vec::from_rows(&rows))
     }
 }

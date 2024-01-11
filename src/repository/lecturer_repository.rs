@@ -4,7 +4,7 @@ use crate::{
         class_model::ClassWithSubjectName,
         course_model::Course,
         lecturer_model::{Lecturer, LecturerWithClasses, LecturerWithCourses},
-        FromRow,
+        FromRow, FromRows,
     },
 };
 
@@ -23,11 +23,7 @@ impl<'a> LecturerRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        let mut lecturers: Vec<Lecturer> = Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            lecturers.push(Lecturer::from_row(&row));
-        });
-        Ok(lecturers)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_lecturers_with_courses(
@@ -47,11 +43,7 @@ impl<'a> LecturerRepository<'a> {
                     group by l.id
                     order by l.code asc"
             ).fetch_all(self.db).await?;
-        let mut lecturers_courses = Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            lecturers_courses.push(LecturerWithCourses::<Vec<Course>>::from_row(&row))
-        });
-        Ok(lecturers_courses)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_lecturers_with_classes(
@@ -72,13 +64,7 @@ impl<'a> LecturerRepository<'a> {
                     group by l.id
                     order by l.code asc"
             ).fetch_all(self.db).await?;
-        let mut lecturers_classes = Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            lecturers_classes.push(LecturerWithClasses::<Vec<ClassWithSubjectName>>::from_row(
-                &row,
-            ))
-        });
-        Ok(lecturers_classes)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_lecturer_by_id(&self, lecturer_id: &String) -> Result<Lecturer, sqlx::Error> {
@@ -105,9 +91,6 @@ impl<'a> LecturerRepository<'a> {
         .bind(course_id)
         .fetch_all(self.db)
         .await?;
-        let mut lecturers: Vec<Lecturer> = Vec::with_capacity(rows.len());
-        rows.into_iter()
-            .for_each(|row| lecturers.push(Lecturer::from_row(&row)));
-        Ok(lecturers)
+        Ok(Vec::from_rows(&rows))
     }
 }

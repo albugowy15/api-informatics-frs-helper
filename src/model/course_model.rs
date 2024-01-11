@@ -1,7 +1,7 @@
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use sqlx::Row;
+use sqlx::{mysql::MySqlRow, Row};
 
-use super::FromRow;
+use super::{FromRow, FromRows};
 use crate::services::IntoJson;
 
 #[derive(Deserialize, Serialize)]
@@ -20,6 +20,14 @@ impl FromRow for Course {
             semester: row.get("semester"),
             sks: row.get("sks"),
         }
+    }
+}
+impl FromRows for Vec<Course> {
+    fn from_rows(rows: &[MySqlRow]) -> Self {
+        let mut courses = Vec::with_capacity(rows.len());
+        rows.iter()
+            .for_each(|row| courses.push(Course::from_row(row)));
+        courses
     }
 }
 
@@ -43,6 +51,14 @@ impl<TData: Default + DeserializeOwned> FromRow for CourseWithLecturer<TData> {
         }
     }
 }
+impl<TData: Default + DeserializeOwned> FromRows for Vec<CourseWithLecturer<TData>> {
+    fn from_rows(rows: &[MySqlRow]) -> Self {
+        let mut courses_lecturers = Vec::with_capacity(rows.len());
+        rows.iter()
+            .for_each(|row| courses_lecturers.push(CourseWithLecturer::from_row(row)));
+        courses_lecturers
+    }
+}
 
 #[derive(Serialize)]
 pub struct CourseWithClass<TClass> {
@@ -62,5 +78,13 @@ impl<TData: Default + DeserializeOwned> FromRow for CourseWithClass<TData> {
             sks: row.get("sks"),
             kelas: serde_json::from_str(row.get("kelas")).unwrap_or_default(),
         }
+    }
+}
+impl<TData: Default + DeserializeOwned> FromRows for Vec<CourseWithClass<TData>> {
+    fn from_rows(rows: &[MySqlRow]) -> Self {
+        let mut courses_lecturers = Vec::with_capacity(rows.len());
+        rows.iter()
+            .for_each(|row| courses_lecturers.push(CourseWithClass::from_row(row)));
+        courses_lecturers
     }
 }
