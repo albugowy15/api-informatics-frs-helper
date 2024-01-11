@@ -1,16 +1,33 @@
 use axum::{http::StatusCode, Json};
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 pub mod class_service;
 pub mod course_service;
 pub mod home_service;
 pub mod lecturer_service;
 pub mod swagger_service;
 
+pub trait IntoJson
+where
+    Self: Serialize,
+{
+    fn into_json(&self) -> JsonResponse {
+        Json(json!(self))
+    }
+}
 #[derive(Serialize)]
-pub struct SuccessResponse<T> {
+pub struct DataResponse<T> {
     total_results: usize,
     data: T,
+}
+impl<T: Serialize> IntoJson for DataResponse<T> {}
+impl<T: Serialize> DataResponse<T> {
+    fn new(total_results: usize, data: T) -> Self {
+        Self {
+            total_results,
+            data,
+        }
+    }
 }
 
 pub type JsonResponse = Json<Value>;
