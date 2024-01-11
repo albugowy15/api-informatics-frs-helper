@@ -2,15 +2,13 @@ use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod db;
+pub mod model;
 pub mod repository;
 mod route;
 pub mod services;
 
 #[tokio::main]
 async fn main() {
-    // load env
-    dotenv::dotenv().expect("Error load .env");
-
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -18,11 +16,10 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
-
-    // setup app route
+    if let Err(err) = dotenv::dotenv() {
+        tracing::debug!("Error load env: {}", err)
+    };
     let app = route::get_routes().await;
-
-    // attach http listener
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app.into_make_service())
