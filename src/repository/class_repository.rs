@@ -1,6 +1,9 @@
 use crate::{
     db::DbPool,
-    model::{class_model::*, FromRow},
+    model::{
+        class_model::{Class, ClassWithSubjectName, CompactClass},
+        FromRow, FromRows,
+    },
 };
 
 pub struct ClassRepository<'a> {
@@ -24,11 +27,7 @@ impl<'a> ClassRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        let mut classes: Vec<Class> = Vec::with_capacity(rows.len());
-        rows.into_iter()
-            .for_each(|row| classes.push(Class::from_row(&row)));
-
-        Ok(classes)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_class_by_id(&self, class_id: &String) -> Result<Class, sqlx::Error> {
@@ -66,11 +65,7 @@ impl<'a> ClassRepository<'a> {
         .bind(course_id)
         .fetch_all(self.db)
         .await?;
-        let mut classes: Vec<CompactClass> = Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            classes.push(CompactClass::from_row(&row));
-        });
-        Ok(classes)
+        Ok(Vec::from_rows(&rows))
     }
 
     pub async fn get_classes_by_lecturer_id(
@@ -90,9 +85,6 @@ impl<'a> ClassRepository<'a> {
         .bind(lecturer_id)
         .fetch_all(self.db)
         .await?;
-        let mut classes: Vec<ClassWithSubjectName> = Vec::with_capacity(rows.len());
-        rows.into_iter()
-            .for_each(|row| classes.push(ClassWithSubjectName::from_row(&row)));
-        Ok(classes)
+        Ok(Vec::from_rows(&rows))
     }
 }

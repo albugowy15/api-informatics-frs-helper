@@ -1,7 +1,7 @@
 name: Rust Check
 
 on:
-  pull_request: 
+  pull_request:
     branches: ["main"]
 
 jobs:
@@ -26,13 +26,13 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/            
+            target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
       - name: Lint
         run: |
           cargo fmt --all -- --check
-          cargo clippy -- -D warnings                           
+          cargo clippy -- -D warnings
       - name: Test
         run: cargo test
       - name: Release Build

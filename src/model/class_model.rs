@@ -3,7 +3,7 @@ use sqlx::{mysql::MySqlRow, Row};
 
 use crate::services::IntoJson;
 
-use super::FromRow;
+use super::{FromRow, FromRows};
 
 #[derive(Deserialize, Serialize)]
 pub struct Class {
@@ -29,6 +29,15 @@ impl FromRow for Class {
         }
     }
 }
+impl FromRows for Vec<Class> {
+    fn from_rows(rows: &[MySqlRow]) -> Self {
+        let mut classes = Vec::with_capacity(rows.len());
+        rows.iter().for_each(|row| {
+            classes.push(Class::from_row(row));
+        });
+        classes
+    }
+}
 
 #[derive(Deserialize, Serialize)]
 pub struct CompactClass {
@@ -50,6 +59,15 @@ impl FromRow for CompactClass {
         }
     }
 }
+impl FromRows for Vec<CompactClass> {
+    fn from_rows(rows: &[MySqlRow]) -> Self {
+        let mut classes = Vec::with_capacity(rows.len());
+        rows.iter().for_each(|row| {
+            classes.push(CompactClass::from_row(row));
+        });
+        classes
+    }
+}
 
 #[derive(Deserialize, Serialize)]
 pub struct ClassWithSubjectName {
@@ -69,5 +87,14 @@ impl FromRow for ClassWithSubjectName {
             jam: row.get("jam"),
             matkul: row.get("matkul"),
         }
+    }
+}
+impl FromRows for Vec<ClassWithSubjectName> {
+    fn from_rows(rows: &[MySqlRow]) -> Self {
+        let mut classes = Vec::with_capacity(rows.len());
+        rows.iter().for_each(|row| {
+            classes.push(ClassWithSubjectName::from_row(row));
+        });
+        classes
     }
 }
