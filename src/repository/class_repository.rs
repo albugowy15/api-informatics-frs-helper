@@ -1,39 +1,10 @@
-use serde::{Deserialize, Serialize};
-use sqlx::Row;
-
-use crate::db::DbPool;
+use crate::{
+    db::DbPool,
+    model::{class_model::*, FromRow},
+};
 
 pub struct ClassRepository<'a> {
     db: &'a DbPool,
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct Class {
-    pub id: String,
-    pub matkul: String,
-    pub kode_kelas: String,
-    pub hari: String,
-    pub jam: String,
-    pub kode_dosen: String,
-    pub nama_dosen: String,
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct CompactClass {
-    pub id: String,
-    pub kode_kelas: String,
-    pub hari: String,
-    pub jam: String,
-    pub kode_dosen: String,
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct ClassWithSubjectName {
-    id: String,
-    matkul: String,
-    kode_kelas: String,
-    hari: String,
-    jam: String,
 }
 
 impl<'a> ClassRepository<'a> {
@@ -43,8 +14,8 @@ impl<'a> ClassRepository<'a> {
 
     pub async fn get_classes(&self) -> Result<Vec<Class>, sqlx::Error> {
         let rows = sqlx::query(
-            "select c.id, m.name as matkul, c.code as kode_kelas, c.day,
-            s.session_time, l.code as kode_dosen, l.fullname as nama_dosen from Class c
+            "select c.id, m.name as matkul, c.code as kode_kelas, c.day as hari,
+            s.session_time as jam, l.code as kode_dosen, l.fullname as nama_dosen from Class c
             inner join Session s on s.id = c.sessionId 
             inner join Matkul m on m.id = c.matkulId 
             inner join _ClassToLecturer cl on cl.A = c.id 
@@ -54,25 +25,16 @@ impl<'a> ClassRepository<'a> {
         .fetch_all(self.db)
         .await?;
         let mut classes: Vec<Class> = Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            classes.push(Class {
-                id: row.get("id"),
-                matkul: row.get("matkul"),
-                kode_kelas: row.get("kode_kelas"),
-                hari: row.get("day"),
-                jam: row.get("session_time"),
-                kode_dosen: row.get("kode_dosen"),
-                nama_dosen: row.get("nama_dosen"),
-            })
-        });
+        rows.into_iter()
+            .for_each(|row| classes.push(Class::from_row(&row)));
 
         Ok(classes)
     }
 
     pub async fn get_class_by_id(&self, class_id: &String) -> Result<Class, sqlx::Error> {
         let row = sqlx::query(
-            "select c.id, m.name as matkul, c.code as kode_kelas, c.day,
-                    s.session_time, l.code as kode_dosen, l.fullname as nama_dosen from Class c
+            "select c.id, m.name as matkul, c.code as kode_kelas, c.day as hari,
+                    s.session_time as jam, l.code as kode_dosen, l.fullname as nama_dosen from Class c
                     inner join Session s on s.id = c.sessionId 
                     inner join Matkul m on m.id = c.matkulId 
                     inner join _ClassToLecturer cl on cl.A = c.id 
@@ -83,15 +45,7 @@ impl<'a> ClassRepository<'a> {
         .bind(class_id)
         .fetch_one(self.db)
         .await?;
-        Ok(Class {
-            id: row.get("id"),
-            matkul: row.get("matkul"),
-            kode_kelas: row.get("kode_kelas"),
-            hari: row.get("day"),
-            jam: row.get("session_time"),
-            kode_dosen: row.get("kode_dosen"),
-            nama_dosen: row.get("nama_dosen"),
-        })
+        Ok(Class::from_row(&row))
     }
 
     pub async fn get_classes_by_course_id(
@@ -100,7 +54,7 @@ impl<'a> ClassRepository<'a> {
     ) -> Result<Vec<CompactClass>, sqlx::Error> {
         let rows = sqlx::query(
             "select c.id, c.code as kode_kelas,
-                c.day, s.session_time, l.code as kode_dosen
+                c.day as hari, s.session_time as jam, l.code as kode_dosen
                 from Class c
                 inner join Session s on s.id = c.sessionId 
                 inner join Matkul m on m.id = c.matkulId 
@@ -114,13 +68,7 @@ impl<'a> ClassRepository<'a> {
         .await?;
         let mut classes: Vec<CompactClass> = Vec::with_capacity(rows.len());
         rows.into_iter().for_each(|row| {
-            classes.push(CompactClass {
-                id: row.get("id"),
-                hari: row.get("day"),
-                jam: row.get("session_time"),
-                kode_dosen: row.get("kode_dosen"),
-                kode_kelas: row.get("kode_kelas"),
-            });
+            classes.push(CompactClass::from_row(&row));
         });
         Ok(classes)
     }
@@ -130,7 +78,7 @@ impl<'a> ClassRepository<'a> {
         lecturer_id: &String,
     ) -> Result<Vec<ClassWithSubjectName>, sqlx::Error> {
         let rows = sqlx::query(
-            "select c.id, m.name as matkul, c.code as kode_kelas, c.day, s.session_time as jam
+            "select c.id, m.name as matkul, c.code as kode_kelas, c.day as hari, s.session_time as jam
                     from Class c
                     inner join Session s on s.id = c.sessionId 
                     inner join Matkul m on m.id = c.matkulId 
@@ -143,15 +91,8 @@ impl<'a> ClassRepository<'a> {
         .fetch_all(self.db)
         .await?;
         let mut classes: Vec<ClassWithSubjectName> = Vec::with_capacity(rows.len());
-        rows.into_iter().for_each(|row| {
-            classes.push(ClassWithSubjectName {
-                id: row.get("id"),
-                matkul: row.get("matkul"),
-                kode_kelas: row.get("kode_kelas"),
-                hari: row.get("day"),
-                jam: row.get("jam"),
-            })
-        });
+        rows.into_iter()
+            .for_each(|row| classes.push(ClassWithSubjectName::from_row(&row)));
         Ok(classes)
     }
 }
