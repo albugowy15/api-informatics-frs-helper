@@ -20,14 +20,13 @@ pub struct AppState {
 }
 
 pub async fn get_routes() -> Router {
-    // pass db to shared app state
-    let db = DbConnection::create_db_connection().await.unwrap();
-    let shared_state = Arc::new(AppState { db_pool: db });
+    let db = DbConnection::new().await.unwrap();
+    let shared_state = Arc::new(AppState { db_pool: db.pool });
 
     Router::new()
         .route("/", get(services::home_service::home))
         .nest_service("/assets", ServeDir::new("assets"))
-        .route("/swagger", get(services::swagger_service::swagger_handler))
+        .route("/swagger", get(services::swagger_service::swagger))
         .route("/v1/matkul", get(services::course_service::courses))
         .route(
             "/v1/matkul/dosen",
@@ -89,7 +88,7 @@ pub async fn get_routes() -> Router {
                         .allow_methods([Method::GET])
                         .allow_origin(Any),
                 )
-                .layer(TimeoutLayer::new(Duration::from_secs(20)))
+                .layer(TimeoutLayer::new(Duration::from_secs(10)))
                 .layer(BufferLayer::new(1024))
                 .layer(RateLimitLayer::new(5, Duration::from_secs(1))),
         )
