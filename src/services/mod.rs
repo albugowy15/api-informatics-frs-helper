@@ -11,7 +11,10 @@ pub trait IntoJson
 where
     Self: Serialize,
 {
-    fn into_json(&self) -> JsonResponse {
+    fn into_json(self) -> JsonResponse
+    where
+        Self: Sized,
+    {
         Json(json!(self))
     }
 }
