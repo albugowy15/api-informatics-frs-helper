@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use askama::Template;
 use axum::{
     http::StatusCode,
@@ -11,6 +13,10 @@ pub mod course_service;
 pub mod home_service;
 pub mod lecturer_service;
 pub mod swagger_service;
+
+pub trait FilterByParams<T> {
+    fn filter_by_params(params: &HashMap<String, String>, data: &mut Vec<T>);
+}
 
 pub trait IntoJson
 where
