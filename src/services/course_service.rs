@@ -6,7 +6,7 @@ use super::{DataResponse, ErrorViews, IntoJson};
 use crate::{
     model::{
         class_model::CompactClass,
-        course_model::{CourseWithClass, CourseWithLecturer},
+        course_model::{Course, CourseWithClass, CourseWithLecturer},
         lecturer_model::Lecturer,
     },
     repository::{
@@ -17,6 +17,46 @@ use crate::{
 };
 
 use super::{display_err, JsonResponse, RouteHandler};
+
+fn filter_courses<'a>(
+    params: &'a HashMap<String, String>,
+    courses: &'a mut Vec<Course>,
+) -> Result<(), ErrorViews<'a>> {
+    let course_name_param = params.get("nama").map(|s| s.to_lowercase());
+    let semester_param = match params.get("semester") {
+        Some(s) => match s.parse::<i8>() {
+            Ok(num) => Some(num),
+            _ => {
+                return Err(ErrorViews::BadRequest(String::from(
+                    "Semester wajib bertipe integer",
+                )))
+            }
+        },
+        None => None,
+    };
+    let sks_param = match params.get("sks") {
+        Some(s) => match s.parse::<i8>() {
+            Ok(num) => Some(num),
+            _ => {
+                return Err(ErrorViews::BadRequest(String::from(
+                    "sks wajib bertipe integer",
+                )))
+            }
+        },
+        None => None,
+    };
+    courses.retain(|course| {
+        let matches_course_name = course_name_param.as_ref().map_or(true, |course_name| {
+            course.matkul.to_lowercase().contains(course_name)
+        });
+        let matches_semester = semester_param
+            .as_ref()
+            .map_or(true, |semester| course.semester == *semester);
+        let matches_sks = sks_param.as_ref().map_or(true, |sks| course.sks == *sks);
+        matches_course_name && matches_semester && matches_sks
+    });
+    Ok(())
+}
 
 pub async fn courses(
     State(state): State<Arc<AppState>>,
@@ -29,36 +69,10 @@ pub async fn courses(
             return Err(display_err(ErrorViews::Internal));
         }
     };
-    if let Some(course_name_param) = params.get("nama") {
-        courses.retain(|course| {
-            course
-                .matkul
-                .to_lowercase()
-                .contains(&course_name_param.to_lowercase())
-        })
+    if let Err(err) = filter_courses(&params, &mut courses) {
+        return Err(display_err(err));
     }
-    if let Some(semester_param) = params.get("semester") {
-        let parse_semester_param = match semester_param.parse::<i8>() {
-            Ok(num) => num,
-            _ => {
-                return Err(display_err(ErrorViews::BadRequest(String::from(
-                    "semester wajib berupa angka",
-                ))))
-            }
-        };
-        courses.retain(|course| course.semester == parse_semester_param)
-    }
-    if let Some(sks_param) = params.get("sks") {
-        let parse_sks_param = match sks_param.parse::<i8>() {
-            Ok(num) => num,
-            _ => {
-                return Err(display_err(ErrorViews::BadRequest(String::from(
-                    "sks wajib berupa angka",
-                ))))
-            }
-        };
-        courses.retain(|course| course.sks == parse_sks_param)
-    }
+
     Ok(DataResponse::new(courses.len(), courses).into_json())
 }
 

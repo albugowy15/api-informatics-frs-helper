@@ -6,7 +6,7 @@ use crate::{
     model::{
         class_model::ClassWithSubjectName,
         course_model::Course,
-        lecturer_model::{LecturerWithClasses, LecturerWithCourses},
+        lecturer_model::{Lecturer, LecturerWithClasses, LecturerWithCourses},
     },
     repository::{
         class_repository::ClassRepository, course_repository::CourseRepository,
@@ -16,6 +16,20 @@ use crate::{
 };
 
 use super::{display_err, DataResponse, ErrorViews, IntoJson, JsonResponse, RouteHandler};
+
+fn filter_lecturers(params: &HashMap<String, String>, lecturers: &mut Vec<Lecturer>) {
+    let fullname_param = params.get("nama").map(|s| s.to_lowercase());
+    let code_param = params.get("kode").map(|s| s.to_lowercase());
+    lecturers.retain(|lecturer| {
+        let matches_fullname = fullname_param.as_ref().map_or(true, |fullname| {
+            lecturer.nama.to_lowercase().contains(fullname)
+        });
+        let matches_code = code_param
+            .as_ref()
+            .map_or(true, |code| lecturer.kode.to_lowercase() == *code);
+        matches_fullname && matches_code
+    });
+}
 
 pub async fn lecturers(
     State(state): State<Arc<AppState>>,
@@ -28,17 +42,7 @@ pub async fn lecturers(
             return Err(display_err(ErrorViews::Internal));
         }
     };
-    if let Some(fullname_param) = params.get("nama") {
-        lecturers.retain(|lecturer| {
-            lecturer
-                .nama
-                .to_lowercase()
-                .contains(&fullname_param.to_lowercase())
-        });
-    }
-    if let Some(code_param) = params.get("kode") {
-        lecturers.retain(|lecturer| lecturer.kode.to_lowercase() == *code_param.to_lowercase());
-    }
+    filter_lecturers(&params, &mut lecturers);
     Ok(DataResponse::new(lecturers.len(), lecturers).into_json())
 }
 
