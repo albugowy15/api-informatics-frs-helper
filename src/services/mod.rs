@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use askama::Template;
 use axum::{
     http::StatusCode,
@@ -13,10 +11,6 @@ pub mod course_service;
 pub mod home_service;
 pub mod lecturer_service;
 pub mod swagger_service;
-
-pub trait FilterByParams<T> {
-    fn filter_by_params(params: &HashMap<String, String>, data: &mut Vec<T>);
-}
 
 pub trait IntoJson
 where
@@ -53,16 +47,18 @@ pub enum ErrorViews<'a> {
     BadRequest(String),
 }
 
-fn display_err(variant: ErrorViews) -> (StatusCode, String) {
-    match variant {
-        ErrorViews::Internal => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            String::from("Internal server error"),
-        ),
-        ErrorViews::NotFound(field) => {
-            (StatusCode::NOT_FOUND, format!("{} tidak ditemukan", field))
+impl<'a> From<ErrorViews<'a>> for (StatusCode, String) {
+    fn from(val: ErrorViews<'a>) -> Self {
+        match val {
+            ErrorViews::Internal => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                String::from("Internal server error"),
+            ),
+            ErrorViews::NotFound(field) => {
+                (StatusCode::NOT_FOUND, format!("{} tidak ditemukan", field))
+            }
+            ErrorViews::BadRequest(message) => (StatusCode::BAD_REQUEST, message),
         }
-        ErrorViews::BadRequest(message) => (StatusCode::BAD_REQUEST, message),
     }
 }
 

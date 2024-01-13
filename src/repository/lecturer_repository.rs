@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     db::DbPool,
     model::{
@@ -17,6 +19,18 @@ impl<'a> LecturerRepository<'a> {
         LecturerRepository { db: db_connection }
     }
 
+    fn filter(params: &HashMap<String, String>, lecturer: &Lecturer) -> bool {
+        let fullname_param = params.get("nama").map(|s| s.to_lowercase());
+        let code_param = params.get("kode").map(|s| s.to_lowercase());
+        let matches_fullname = fullname_param.as_ref().map_or(true, |fullname| {
+            lecturer.nama.to_lowercase().contains(fullname)
+        });
+        let matches_code = code_param
+            .as_ref()
+            .map_or(true, |code| lecturer.kode.to_lowercase() == *code);
+        matches_fullname && matches_code
+    }
+
     pub async fn get_lecturers(&self) -> Result<Vec<Lecturer>, sqlx::Error> {
         let rows = sqlx::query(
             "select id, code as kode, fullname as nama from Lecturer order by code asc",
@@ -24,6 +38,29 @@ impl<'a> LecturerRepository<'a> {
         .fetch_all(self.db)
         .await?;
         Ok(Vec::from_rows(&rows))
+    }
+
+    pub async fn get_lecturers_with_filter(
+        &self,
+        params: &HashMap<String, String>,
+    ) -> Result<Vec<Lecturer>, sqlx::Error> {
+        let rows = sqlx::query(
+            "select id, code as kode, fullname as nama from Lecturer order by code asc",
+        )
+        .fetch_all(self.db)
+        .await?;
+        let lecturers = rows
+            .into_iter()
+            .filter_map(|row| {
+                let lecturer = Lecturer::from_row(&row);
+                if Self::filter(params, &lecturer) {
+                    Some(lecturer)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        Ok(lecturers)
     }
 
     pub async fn get_lecturers_with_courses(
