@@ -16,7 +16,7 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
-    if let Err(err) = dotenv::dotenv() {
+    if let Err(err) = dotenvy::dotenv() {
         tracing::debug!("Error load env: {}", err)
     };
     let app = route::get_routes().await;
