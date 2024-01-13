@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     db::DbPool,
     model::{
@@ -17,6 +19,20 @@ impl<'a> CourseRepository<'a> {
         CourseRepository { db: db_connection }
     }
 
+    fn filter(params: &HashMap<String, String>, course: &Course) -> bool {
+        let course_name_param = params.get("nama").map(|s| s.to_lowercase());
+        let semester_param = params.get("semester").and_then(|s| s.parse::<i8>().ok());
+        let sks_param = params.get("sks").and_then(|s| s.parse::<i8>().ok());
+        let matches_course_name = course_name_param.as_ref().map_or(true, |course_name| {
+            course.matkul.to_lowercase().contains(course_name)
+        });
+        let matches_semester = semester_param
+            .as_ref()
+            .map_or(true, |semester| course.semester == *semester);
+        let matches_sks = sks_param.as_ref().map_or(true, |sks| course.sks == *sks);
+        matches_course_name && matches_semester && matches_sks
+    }
+
     pub async fn get_courses(&self) -> Result<Vec<Course>, sqlx::Error> {
         let rows = sqlx::query(
             "select m.id, m.name as matkul, m.semester, m.sks from Matkul m order by m.semester asc",
@@ -26,6 +42,28 @@ impl<'a> CourseRepository<'a> {
         Ok(Vec::from_rows(&rows))
     }
 
+    pub async fn get_courses_with_filter(
+        &self,
+        params: &HashMap<String, String>,
+    ) -> Result<Vec<Course>, sqlx::Error> {
+        let rows = sqlx::query(
+            "select m.id, m.name as matkul, m.semester, m.sks from Matkul m order by m.semester asc",
+        )
+        .fetch_all(self.db)
+        .await?;
+        let courses = rows
+            .into_iter()
+            .filter_map(|row| {
+                let course = Course::from_row(&row);
+                if Self::filter(params, &course) {
+                    Some(course)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        Ok(courses)
+    }
     pub async fn get_course_by_id(&self, course_id: &String) -> Result<Course, sqlx::Error> {
         let row = sqlx::query(
             "select m.id, m.name as matkul, m.semester, m.sks from Matkul m where m.id = ?",
