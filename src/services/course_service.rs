@@ -2,12 +2,12 @@ use std::{collections::HashMap, sync::Arc};
 
 use axum::extract::{Path, Query, State};
 
-use super::{DataResponse, ErrorViews, IntoJson};
 use crate::{
     model::{
         class_model::CompactClass,
         course_model::{CourseWithClass, CourseWithLecturer},
         lecturer_model::Lecturer,
+        response_model::{DataResponse, ErrorViews},
     },
     repository::{
         class_repository::ClassRepository, course_repository::CourseRepository,
@@ -42,7 +42,7 @@ pub async fn courses(
         .await
         .map_err(|_| ErrorViews::Internal)?;
 
-    Ok(DataResponse::new(courses.len(), courses).into_json())
+    Ok(DataResponse::new(courses.len(), courses).into())
 }
 
 pub async fn course_by_id(
@@ -57,7 +57,7 @@ pub async fn course_by_id(
             sqlx::Error::RowNotFound => ErrorViews::NotFound("Matkul"),
             _ => ErrorViews::Internal,
         })?;
-    Ok(course.into_json())
+    Ok(course.into())
 }
 
 pub async fn courses_with_lecturers(
@@ -68,7 +68,7 @@ pub async fn courses_with_lecturers(
         .get_courses_with_lecturers()
         .await
         .map_err(|_| ErrorViews::Internal)?;
-    Ok(DataResponse::new(courses_lecturers.len(), courses_lecturers).into_json())
+    Ok(DataResponse::new(courses_lecturers.len(), courses_lecturers).into())
 }
 
 pub async fn courses_with_classes(
@@ -79,7 +79,7 @@ pub async fn courses_with_classes(
         .get_courses_with_classes()
         .await
         .map_err(|_| ErrorViews::Internal)?;
-    Ok(DataResponse::new(courses_classes.len(), courses_classes).into_json())
+    Ok(DataResponse::new(courses_classes.len(), courses_classes).into())
 }
 
 pub async fn course_by_id_with_classes(
@@ -103,7 +103,7 @@ pub async fn course_by_id_with_classes(
         sks: course.sks,
         kelas: classes,
     };
-    Ok(response.into_json())
+    Ok(response.into())
 }
 
 pub async fn course_by_id_with_lecturers(
@@ -127,5 +127,5 @@ pub async fn course_by_id_with_lecturers(
         sks: course.sks,
         dosen: lecturers,
     };
-    Ok(response.into_json())
+    Ok(response.into())
 }

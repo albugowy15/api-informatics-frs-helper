@@ -7,6 +7,7 @@ use crate::{
         class_model::ClassWithSubjectName,
         course_model::Course,
         lecturer_model::{LecturerWithClasses, LecturerWithCourses},
+        response_model::{DataResponse, ErrorViews},
     },
     repository::{
         class_repository::ClassRepository, course_repository::CourseRepository,
@@ -15,7 +16,7 @@ use crate::{
     route::AppState,
 };
 
-use super::{DataResponse, ErrorViews, IntoJson, JsonResponse, RouteHandler};
+use super::{JsonResponse, RouteHandler};
 
 pub async fn lecturers(
     State(state): State<Arc<AppState>>,
@@ -26,7 +27,7 @@ pub async fn lecturers(
         .get_lecturers_with_filter(&params)
         .await
         .map_err(|_| ErrorViews::Internal)?;
-    Ok(DataResponse::new(lecturers.len(), lecturers).into_json())
+    Ok(DataResponse::new(lecturers.len(), lecturers).into())
 }
 
 pub async fn lecturers_with_courses(
@@ -37,7 +38,7 @@ pub async fn lecturers_with_courses(
         .get_lecturers_with_courses()
         .await
         .map_err(|_| ErrorViews::Internal)?;
-    Ok(DataResponse::new(lecturers_courses.len(), lecturers_courses).into_json())
+    Ok(DataResponse::new(lecturers_courses.len(), lecturers_courses).into())
 }
 
 pub async fn lecturers_with_classes(
@@ -48,7 +49,7 @@ pub async fn lecturers_with_classes(
         .get_lecturers_with_classes()
         .await
         .map_err(|_| ErrorViews::Internal)?;
-    Ok(DataResponse::new(lecturers_classes.len(), lecturers_classes).into_json())
+    Ok(DataResponse::new(lecturers_classes.len(), lecturers_classes).into())
 }
 
 pub async fn lecturer_by_id(
@@ -63,7 +64,7 @@ pub async fn lecturer_by_id(
             sqlx::Error::RowNotFound => ErrorViews::NotFound("Dosen"),
             _ => ErrorViews::Internal,
         })?;
-    Ok(lecturer.into_json())
+    Ok(lecturer.into())
 }
 
 pub async fn lecturer_by_id_with_classes(
@@ -89,7 +90,7 @@ pub async fn lecturer_by_id_with_classes(
         kode: lecturer.kode,
         kelas: classes,
     };
-    Ok(response.into_json())
+    Ok(response.into())
 }
 
 pub async fn lecturer_by_id_with_courses(
@@ -115,5 +116,5 @@ pub async fn lecturer_by_id_with_courses(
         nama: lecturer.nama,
         matkul: courses,
     };
-    Ok(response.into_json())
+    Ok(response.into())
 }

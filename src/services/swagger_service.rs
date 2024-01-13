@@ -1,7 +1,7 @@
 use askama::Template;
 use axum::response::IntoResponse;
 
-use super::HtmlTemplate;
+use crate::model::response_model::HtmlTemplate;
 
 #[derive(Template)]
 #[template(path = "swagger.html")]

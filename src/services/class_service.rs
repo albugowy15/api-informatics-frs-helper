@@ -2,9 +2,13 @@ use std::{collections::HashMap, sync::Arc};
 
 use axum::extract::{Path, Query, State};
 
-use crate::{repository::class_repository::ClassRepository, route::AppState};
+use crate::{
+    model::response_model::{DataResponse, ErrorViews},
+    repository::class_repository::ClassRepository,
+    route::AppState,
+};
 
-use super::{DataResponse, ErrorViews, IntoJson, JsonResponse, RouteHandler};
+use super::{JsonResponse, RouteHandler};
 
 pub async fn classes(
     State(state): State<Arc<AppState>>,
@@ -15,7 +19,7 @@ pub async fn classes(
         .get_classes_with_filter(&params)
         .await
         .map_err(|_| ErrorViews::Internal)?;
-    Ok(DataResponse::new(classes.len(), classes).into_json())
+    Ok(DataResponse::new(classes.len(), classes).into())
 }
 
 pub async fn class_by_id(
@@ -30,5 +34,5 @@ pub async fn class_by_id(
             sqlx::Error::RowNotFound => ErrorViews::NotFound("Kelas"),
             _ => ErrorViews::Internal,
         })?;
-    Ok(class.into_json())
+    Ok(class.into())
 }
