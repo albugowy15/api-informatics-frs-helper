@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 
+use sqlx::FromRow;
+
 use crate::{
     db::DbPool,
     model::{
         class_model::ClassWithSubjectName,
         course_model::Course,
         lecturer_model::{Lecturer, LecturerWithClasses, LecturerWithCourses},
-        FromRow, FromRows,
+        FromRows,
     },
 };
 
@@ -37,7 +39,7 @@ impl<'a> LecturerRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_lecturers_with_filter(
@@ -52,7 +54,7 @@ impl<'a> LecturerRepository<'a> {
         let lecturers = rows
             .into_iter()
             .filter_map(|row| {
-                let lecturer = Lecturer::from_row(&row);
+                let lecturer = Lecturer::from_row(&row).ok()?;
                 if Self::filter(params, &lecturer) {
                     Some(lecturer)
                 } else {
@@ -80,7 +82,7 @@ impl<'a> LecturerRepository<'a> {
                     group by l.id
                     order by l.code asc"
             ).fetch_all(self.db).await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_lecturers_with_classes(
@@ -101,7 +103,7 @@ impl<'a> LecturerRepository<'a> {
                     group by l.id
                     order by l.code asc"
             ).fetch_all(self.db).await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_lecturer_by_id(&self, lecturer_id: &String) -> Result<Lecturer, sqlx::Error> {
@@ -110,7 +112,7 @@ impl<'a> LecturerRepository<'a> {
                 .bind(lecturer_id)
                 .fetch_one(self.db)
                 .await?;
-        Ok(Lecturer::from_row(&row))
+        Lecturer::from_row(&row)
     }
 
     pub async fn get_lecturers_by_course_id(
@@ -128,6 +130,6 @@ impl<'a> LecturerRepository<'a> {
         .bind(course_id)
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 }

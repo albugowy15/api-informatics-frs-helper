@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 
+use sqlx::FromRow;
+
 use crate::{
     db::DbPool,
     model::{
         class_model::CompactClass,
         course_model::{Course, CourseWithClass, CourseWithLecturer},
         lecturer_model::Lecturer,
-        FromRow, FromRows,
+        FromRows,
     },
 };
 
@@ -39,7 +41,7 @@ impl<'a> CourseRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_courses_with_filter(
@@ -54,7 +56,7 @@ impl<'a> CourseRepository<'a> {
         let courses = rows
             .into_iter()
             .filter_map(|row| {
-                let course = Course::from_row(&row);
+                let course = Course::from_row(&row).ok()?;
                 if Self::filter(params, &course) {
                     Some(course)
                 } else {
@@ -62,6 +64,7 @@ impl<'a> CourseRepository<'a> {
                 }
             })
             .collect();
+
         Ok(courses)
     }
     pub async fn get_course_by_id(&self, course_id: &String) -> Result<Course, sqlx::Error> {
@@ -71,7 +74,7 @@ impl<'a> CourseRepository<'a> {
         .bind(course_id)
         .fetch_one(self.db)
         .await?;
-        Ok(Course::from_row(&row))
+        Course::from_row(&row)
     }
 
     pub async fn get_courses_by_lecturer_id(
@@ -91,7 +94,7 @@ impl<'a> CourseRepository<'a> {
         .bind(lecturer_id)
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_courses_with_lecturers(
@@ -115,7 +118,7 @@ impl<'a> CourseRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_courses_with_classes(
@@ -142,6 +145,6 @@ impl<'a> CourseRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 }

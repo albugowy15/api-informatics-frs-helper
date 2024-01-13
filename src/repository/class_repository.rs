@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
+use sqlx::FromRow;
+
 use crate::{
     db::DbPool,
     model::{
         class_model::{Class, ClassWithSubjectName, CompactClass},
-        FromRow, FromRows,
+        FromRows,
     },
 };
 
@@ -47,7 +49,7 @@ impl<'a> ClassRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_classes_with_filter(
@@ -65,10 +67,11 @@ impl<'a> ClassRepository<'a> {
         )
         .fetch_all(self.db)
         .await?;
+
         let classes = rows
             .into_iter()
             .filter_map(|row| {
-                let class = Class::from_row(&row);
+                let class = Class::from_row(&row).ok()?;
                 if Self::filter(params, &class) {
                     Some(class)
                 } else {
@@ -93,7 +96,7 @@ impl<'a> ClassRepository<'a> {
         .bind(class_id)
         .fetch_one(self.db)
         .await?;
-        Ok(Class::from_row(&row))
+        Class::from_row(&row)
     }
 
     pub async fn get_classes_by_course_id(
@@ -114,7 +117,7 @@ impl<'a> ClassRepository<'a> {
         .bind(course_id)
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 
     pub async fn get_classes_by_lecturer_id(
@@ -134,6 +137,6 @@ impl<'a> ClassRepository<'a> {
         .bind(lecturer_id)
         .fetch_all(self.db)
         .await?;
-        Ok(Vec::from_rows(&rows))
+        Vec::from_rows(&rows)
     }
 }
