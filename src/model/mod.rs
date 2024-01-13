@@ -3,11 +3,10 @@ use sqlx::mysql::MySqlRow;
 pub mod class_model;
 pub mod course_model;
 pub mod lecturer_model;
-
-pub trait FromRow {
-    fn from_row(row: &MySqlRow) -> Self;
-}
+pub mod response_model;
 
 pub trait FromRows {
-    fn from_rows(rows: &[MySqlRow]) -> Self;
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error>
+    where
+        Self: Sized;
 }

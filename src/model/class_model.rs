@@ -1,11 +1,11 @@
+use axum::Json;
 use serde::{Deserialize, Serialize};
-use sqlx::{mysql::MySqlRow, Row};
+use serde_json::{json, Value};
+use sqlx::{mysql::MySqlRow, FromRow};
 
-use crate::services::IntoJson;
+use super::FromRows;
 
-use super::{FromRow, FromRows};
-
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, sqlx::FromRow)]
 pub struct Class {
     pub id: String,
     pub matkul: String,
@@ -15,31 +15,18 @@ pub struct Class {
     pub kode_dosen: String,
     pub nama_dosen: String,
 }
-impl IntoJson for Class {}
-impl FromRow for Class {
-    fn from_row(row: &MySqlRow) -> Self {
-        Self {
-            id: row.get("id"),
-            matkul: row.get("matkul"),
-            kode_kelas: row.get("kode_kelas"),
-            hari: row.get("hari"),
-            jam: row.get("jam"),
-            kode_dosen: row.get("kode_dosen"),
-            nama_dosen: row.get("nama_dosen"),
-        }
+impl From<Class> for Json<Value> {
+    fn from(class: Class) -> Self {
+        Json(json!(class))
     }
 }
 impl FromRows for Vec<Class> {
-    fn from_rows(rows: &[MySqlRow]) -> Self {
-        let mut classes = Vec::with_capacity(rows.len());
-        rows.iter().for_each(|row| {
-            classes.push(Class::from_row(row));
-        });
-        classes
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error> {
+        rows.iter().map(Class::from_row).collect()
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, sqlx::FromRow)]
 pub struct CompactClass {
     pub id: String,
     pub kode_kelas: String,
@@ -47,29 +34,18 @@ pub struct CompactClass {
     pub jam: String,
     pub kode_dosen: String,
 }
-impl IntoJson for CompactClass {}
-impl FromRow for CompactClass {
-    fn from_row(row: &MySqlRow) -> Self {
-        Self {
-            id: row.get("id"),
-            kode_kelas: row.get("kode_kelas"),
-            hari: row.get("hari"),
-            jam: row.get("jam"),
-            kode_dosen: row.get("kode_dosen"),
-        }
+impl From<CompactClass> for Json<Value> {
+    fn from(class: CompactClass) -> Self {
+        Json(json!(class))
     }
 }
 impl FromRows for Vec<CompactClass> {
-    fn from_rows(rows: &[MySqlRow]) -> Self {
-        let mut classes = Vec::with_capacity(rows.len());
-        rows.iter().for_each(|row| {
-            classes.push(CompactClass::from_row(row));
-        });
-        classes
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error> {
+        rows.iter().map(CompactClass::from_row).collect()
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, sqlx::FromRow)]
 pub struct ClassWithSubjectName {
     id: String,
     matkul: String,
@@ -77,24 +53,13 @@ pub struct ClassWithSubjectName {
     hari: String,
     jam: String,
 }
-impl IntoJson for ClassWithSubjectName {}
-impl FromRow for ClassWithSubjectName {
-    fn from_row(row: &MySqlRow) -> Self {
-        Self {
-            id: row.get("id"),
-            kode_kelas: row.get("kode_kelas"),
-            hari: row.get("hari"),
-            jam: row.get("jam"),
-            matkul: row.get("matkul"),
-        }
+impl From<ClassWithSubjectName> for Json<Value> {
+    fn from(class: ClassWithSubjectName) -> Self {
+        Json(json!(class))
     }
 }
 impl FromRows for Vec<ClassWithSubjectName> {
-    fn from_rows(rows: &[MySqlRow]) -> Self {
-        let mut classes = Vec::with_capacity(rows.len());
-        rows.iter().for_each(|row| {
-            classes.push(ClassWithSubjectName::from_row(row));
-        });
-        classes
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error> {
+        rows.iter().map(ClassWithSubjectName::from_row).collect()
     }
 }

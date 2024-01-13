@@ -1,33 +1,25 @@
+use axum::Json;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use sqlx::{mysql::MySqlRow, Row};
+use serde_json::{json, Value};
+use sqlx::{mysql::MySqlRow, FromRow, Row};
 
-use super::{FromRow, FromRows};
-use crate::services::IntoJson;
+use super::FromRows;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, sqlx::FromRow)]
 pub struct Course {
     pub id: String,
     pub matkul: String,
     pub semester: i8,
     pub sks: i8,
 }
-impl IntoJson for Course {}
-impl FromRow for Course {
-    fn from_row(row: &MySqlRow) -> Self {
-        Self {
-            id: row.get("id"),
-            matkul: row.get("matkul"),
-            semester: row.get("semester"),
-            sks: row.get("sks"),
-        }
+impl From<Course> for Json<Value> {
+    fn from(value: Course) -> Self {
+        Json(json!(value))
     }
 }
 impl FromRows for Vec<Course> {
-    fn from_rows(rows: &[MySqlRow]) -> Self {
-        let mut courses = Vec::with_capacity(rows.len());
-        rows.iter()
-            .for_each(|row| courses.push(Course::from_row(row)));
-        courses
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error> {
+        rows.iter().map(Course::from_row).collect()
     }
 }
 
@@ -39,24 +31,30 @@ pub struct CourseWithLecturer<TLecturer> {
     pub sks: i8,
     pub dosen: TLecturer,
 }
-impl<T: Serialize> IntoJson for CourseWithLecturer<T> {}
-impl<TData: Default + DeserializeOwned> FromRow for CourseWithLecturer<TData> {
-    fn from_row(row: &MySqlRow) -> Self {
-        Self {
-            id: row.get("id"),
-            matkul: row.get("matkul"),
-            semester: row.get("semester"),
-            sks: row.get("sks"),
-            dosen: serde_json::from_str(row.get("dosen")).unwrap_or_default(),
-        }
+impl<T: Serialize> From<CourseWithLecturer<T>> for Json<Value> {
+    fn from(value: CourseWithLecturer<T>) -> Self {
+        Json(json!(value))
+    }
+}
+impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for CourseWithLecturer<TData> {
+    fn from_row(row: &MySqlRow) -> Result<Self, sqlx::Error> {
+        Ok(Self {
+            id: row.try_get("id")?,
+            matkul: row.try_get("matkul")?,
+            semester: row.try_get("semester")?,
+            sks: row.try_get("sks")?,
+            dosen: serde_json::from_str(row.try_get("dosen")?).map_err(|err| {
+                sqlx::Error::ColumnDecode {
+                    index: "dosen".into(),
+                    source: Box::new(err),
+                }
+            })?,
+        })
     }
 }
 impl<TData: Default + DeserializeOwned> FromRows for Vec<CourseWithLecturer<TData>> {
-    fn from_rows(rows: &[MySqlRow]) -> Self {
-        let mut courses_lecturers = Vec::with_capacity(rows.len());
-        rows.iter()
-            .for_each(|row| courses_lecturers.push(CourseWithLecturer::from_row(row)));
-        courses_lecturers
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error> {
+        rows.iter().map(CourseWithLecturer::from_row).collect()
     }
 }
 
@@ -68,23 +66,29 @@ pub struct CourseWithClass<TClass> {
     pub sks: i8,
     pub kelas: TClass,
 }
-impl<T: Serialize> IntoJson for CourseWithClass<T> {}
-impl<TData: Default + DeserializeOwned> FromRow for CourseWithClass<TData> {
-    fn from_row(row: &MySqlRow) -> Self {
-        Self {
-            id: row.get("id"),
-            matkul: row.get("matkul"),
-            semester: row.get("semester"),
-            sks: row.get("sks"),
-            kelas: serde_json::from_str(row.get("kelas")).unwrap_or_default(),
-        }
+impl<T: Serialize> From<CourseWithClass<T>> for Json<Value> {
+    fn from(value: CourseWithClass<T>) -> Self {
+        Json(json!(value))
+    }
+}
+impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for CourseWithClass<TData> {
+    fn from_row(row: &MySqlRow) -> Result<Self, sqlx::Error> {
+        Ok(Self {
+            id: row.try_get("id")?,
+            matkul: row.try_get("matkul")?,
+            semester: row.try_get("semester")?,
+            sks: row.try_get("sks")?,
+            kelas: serde_json::from_str(row.try_get("kelas")?).map_err(|err| {
+                sqlx::Error::ColumnDecode {
+                    index: "kelas".into(),
+                    source: Box::new(err),
+                }
+            })?,
+        })
     }
 }
 impl<TData: Default + DeserializeOwned> FromRows for Vec<CourseWithClass<TData>> {
-    fn from_rows(rows: &[MySqlRow]) -> Self {
-        let mut courses_lecturers = Vec::with_capacity(rows.len());
-        rows.iter()
-            .for_each(|row| courses_lecturers.push(CourseWithClass::from_row(row)));
-        courses_lecturers
+    fn from_rows(rows: &[MySqlRow]) -> Result<Self, sqlx::Error> {
+        rows.iter().map(CourseWithClass::from_row).collect()
     }
 }
