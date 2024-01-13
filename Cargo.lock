@@ -53,13 +53,13 @@ checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 
 [[package]]
 name = "api-informatics-frs-helper"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "askama",
  "axum",
  "axum-extra",
- "dotenv",
+ "dotenvy",
  "hyper",
  "rustls 0.22.2",
  "serde",
@@ -392,12 +392,6 @@ dependencies = [
  "crypto-common",
  "subtle",
 ]
-
-[[package]]
-name = "dotenv"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
 name = "dotenvy"
