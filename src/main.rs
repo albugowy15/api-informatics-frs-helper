@@ -11,8 +11,9 @@ pub mod services;
 async fn main() {
     tracing_subscriber::registry()
         .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "api_informatics_frs_helper=debug,tower_http=debug".into()),
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "api_informatics_frs_helper=debug,tower_http=debug,sqlx=error".into()
+            }),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
