@@ -40,12 +40,7 @@ impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for LecturerWi
             id: row.try_get("id")?,
             kode: row.try_get("kode")?,
             nama: row.try_get("nama")?,
-            kelas: serde_json::from_str(row.try_get("kelas")?).map_err(|err| {
-                sqlx::Error::ColumnDecode {
-                    index: "kelas".into(),
-                    source: Box::new(err),
-                }
-            })?,
+            kelas: serde_json::from_str(row.try_get("kelas")?).unwrap_or_default(),
         })
     }
 }
@@ -73,12 +68,7 @@ impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for LecturerWi
             id: row.try_get("id")?,
             kode: row.try_get("kode")?,
             nama: row.try_get("nama")?,
-            matkul: serde_json::from_str(row.try_get("matkul")?).map_err(|err| {
-                sqlx::Error::ColumnDecode {
-                    index: "matkul".into(),
-                    source: Box::new(err),
-                }
-            })?,
+            matkul: serde_json::from_str(row.try_get("matkul")?).unwrap_or_default(),
         })
     }
 }

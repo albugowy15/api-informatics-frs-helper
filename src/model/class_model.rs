@@ -26,7 +26,7 @@ impl FromRows for Vec<Class> {
     }
 }
 
-#[derive(Deserialize, Serialize, sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct CompactClass {
     pub id: String,
     pub kode_kelas: String,

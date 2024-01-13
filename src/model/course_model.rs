@@ -43,12 +43,7 @@ impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for CourseWith
             matkul: row.try_get("matkul")?,
             semester: row.try_get("semester")?,
             sks: row.try_get("sks")?,
-            dosen: serde_json::from_str(row.try_get("dosen")?).map_err(|err| {
-                sqlx::Error::ColumnDecode {
-                    index: "dosen".into(),
-                    source: Box::new(err),
-                }
-            })?,
+            dosen: serde_json::from_str(row.try_get("dosen")?).unwrap_or_default(),
         })
     }
 }
@@ -58,7 +53,7 @@ impl<TData: Default + DeserializeOwned> FromRows for Vec<CourseWithLecturer<TDat
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct CourseWithClass<TClass> {
     pub id: String,
     pub matkul: String,
@@ -78,12 +73,7 @@ impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for CourseWith
             matkul: row.try_get("matkul")?,
             semester: row.try_get("semester")?,
             sks: row.try_get("sks")?,
-            kelas: serde_json::from_str(row.try_get("kelas")?).map_err(|err| {
-                sqlx::Error::ColumnDecode {
-                    index: "kelas".into(),
-                    source: Box::new(err),
-                }
-            })?,
+            kelas: serde_json::from_str(row.try_get("kelas")?).unwrap_or_default(),
         })
     }
 }
