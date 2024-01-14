@@ -4,10 +4,8 @@ use sqlx::FromRow;
 
 use crate::{
     db::DbPool,
-    model::{
-        class_model::{Class, ClassWithSubjectName, CompactClass},
-        FromRows,
-    },
+    models::class::{Class, ClassWithSubjectName, CompactClass},
+    FromRows,
 };
 
 pub struct ClassRepository<'a> {

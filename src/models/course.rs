@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::{json, Value};
 use sqlx::{mysql::MySqlRow, FromRow, Row};
 
-use super::FromRows;
+use crate::FromRows;
 
 #[derive(Deserialize, Serialize, sqlx::FromRow)]
 pub struct Course {

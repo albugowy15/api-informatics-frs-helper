@@ -4,12 +4,12 @@ use sqlx::FromRow;
 
 use crate::{
     db::DbPool,
-    model::{
-        class_model::CompactClass,
-        course_model::{Course, CourseWithClass, CourseWithLecturer},
-        lecturer_model::Lecturer,
-        FromRows,
+    models::{
+        class::CompactClass,
+        course::{Course, CourseWithClass, CourseWithLecturer},
+        lecturer::Lecturer,
     },
+    FromRows,
 };
 
 pub struct CourseRepository<'a> {

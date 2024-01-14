@@ -3,12 +3,9 @@ use std::{collections::HashMap, sync::Arc};
 use axum::extract::{Path, Query, State};
 
 use crate::{
-    model::response_model::{DataResponse, ErrorViews},
-    repository::class_repository::ClassRepository,
-    route::AppState,
+    repositories::class::ClassRepository, AppState, DataResponse, ErrorViews, JsonResponse,
+    RouteHandler,
 };
-
-use super::{JsonResponse, RouteHandler};
 
 pub async fn classes(
     State(state): State<Arc<AppState>>,

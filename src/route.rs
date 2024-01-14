@@ -1,79 +1,20 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use axum::{error_handling::HandleErrorLayer, routing::get, BoxError, Router};
-use hyper::{Method, StatusCode};
-use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
-use tower_http::{
-    cors::{Any, CorsLayer},
-    services::ServeDir,
-    timeout::TimeoutLayer,
-    trace::TraceLayer,
-};
+use hyper::StatusCode;
+use tower::{buffer::BufferLayer, ServiceBuilder};
+use tower_http::{services::ServeDir, trace::TraceLayer};
 
-use crate::{
-    db::{DbConnection, DbPool},
-    services,
-};
+use crate::{middleware, routes, services, AppState};
 
-pub struct AppState {
-    pub db_pool: DbPool,
-}
-
-pub async fn get_routes() -> Router {
-    let db = DbConnection::new().await.unwrap();
-    let shared_state = Arc::new(AppState { db_pool: db.pool });
-
+pub async fn get_routes(shared_state: Arc<AppState>) -> Router {
     Router::new()
-        .route("/", get(services::home_service::home))
+        .route("/", get(services::home::home))
+        .route("/swagger", get(services::swagger::swagger))
         .nest_service("/assets", ServeDir::new("assets"))
-        .route("/swagger", get(services::swagger_service::swagger))
-        .route("/v1/matkul", get(services::course_service::courses))
-        .route(
-            "/v1/matkul/dosen",
-            get(services::course_service::courses_with_lecturers),
-        )
-        .route(
-            "/v1/matkul/kelas",
-            get(services::course_service::courses_with_classes),
-        )
-        .route(
-            "/v1/matkul/:id_matkul",
-            get(services::course_service::course_by_id),
-        )
-        .route(
-            "/v1/matkul/:id_matkul/dosen",
-            get(services::course_service::course_by_id_with_lecturers),
-        )
-        .route(
-            "/v1/matkul/:id_matkul/kelas",
-            get(services::course_service::course_by_id_with_classes),
-        )
-        .route("/v1/dosen", get(services::lecturer_service::lecturers))
-        .route(
-            "/v1/dosen/matkul",
-            get(services::lecturer_service::lecturers_with_courses),
-        )
-        .route(
-            "/v1/dosen/kelas",
-            get(services::lecturer_service::lecturers_with_classes),
-        )
-        .route(
-            "/v1/dosen/:id_dosen",
-            get(services::lecturer_service::lecturer_by_id),
-        )
-        .route(
-            "/v1/dosen/:id_dosen/kelas",
-            get(services::lecturer_service::lecturer_by_id_with_classes),
-        )
-        .route(
-            "/v1/dosen/:id_dosen/matkul",
-            get(services::lecturer_service::lecturer_by_id_with_courses),
-        )
-        .route("/v1/kelas", get(services::class_service::classes))
-        .route(
-            "/v1/kelas/:id_kelas",
-            get(services::class_service::class_by_id),
-        )
+        .nest("/v1/matkul", routes::course::course_routes())
+        .nest("/v1/dosen", routes::lecturer::lecturer_routes())
+        .nest("/v1/kelas", routes::class::class_routes())
         .layer(
             ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(|err: BoxError| async move {
@@ -83,14 +24,10 @@ pub async fn get_routes() -> Router {
                     )
                 }))
                 .layer(TraceLayer::new_for_http())
-                .layer(
-                    CorsLayer::new()
-                        .allow_methods([Method::GET])
-                        .allow_origin(Any),
-                )
-                .layer(TimeoutLayer::new(Duration::from_secs(10)))
+                .layer(middleware::cors())
+                .layer(middleware::request_timeout())
                 .layer(BufferLayer::new(1024))
-                .layer(RateLimitLayer::new(5, Duration::from_secs(1))),
+                .layer(middleware::rate_limit()),
         )
         .with_state(shared_state)
 }

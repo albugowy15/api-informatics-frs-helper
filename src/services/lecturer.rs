@@ -3,20 +3,16 @@ use std::{collections::HashMap, sync::Arc};
 use axum::extract::{Path, Query, State};
 
 use crate::{
-    model::{
-        class_model::ClassWithSubjectName,
-        course_model::Course,
-        lecturer_model::{LecturerWithClasses, LecturerWithCourses},
-        response_model::{DataResponse, ErrorViews},
+    models::{
+        class::ClassWithSubjectName,
+        course::Course,
+        lecturer::{LecturerWithClasses, LecturerWithCourses},
     },
-    repository::{
-        class_repository::ClassRepository, course_repository::CourseRepository,
-        lecturer_repository::LecturerRepository,
+    repositories::{
+        class::ClassRepository, course::CourseRepository, lecturer::LecturerRepository,
     },
-    route::AppState,
+    AppState, DataResponse, ErrorViews, JsonResponse, RouteHandler,
 };
-
-use super::{JsonResponse, RouteHandler};
 
 pub async fn lecturers(
     State(state): State<Arc<AppState>>,

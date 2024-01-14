@@ -1,11 +1,8 @@
+use std::sync::Arc;
+
+use api_informatics_frs_helper::{db::DbConnection, route, AppState};
 use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-mod db;
-pub mod model;
-pub mod repository;
-mod route;
-pub mod services;
 
 #[tokio::main]
 async fn main() {
@@ -20,16 +17,18 @@ async fn main() {
     if let Err(err) = dotenvy::dotenv() {
         tracing::debug!("Error load env: {}", err)
     };
-    let app = route::get_routes().await;
+    let db = DbConnection::new().await.unwrap();
+    let shared_state = Arc::new(AppState { db_pool: db.pool });
+    let app = route::get_routes(Arc::clone(&shared_state)).await;
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app.into_make_service())
-        .with_graceful_shutdown(shutdown_signal())
+        .with_graceful_shutdown(shutdown_signal(Arc::clone(&shared_state)))
         .await
         .unwrap();
 }
 
-async fn shutdown_signal() {
+async fn shutdown_signal(shared_state: Arc<AppState>) {
     let ctrl_c = async {
         signal::ctrl_c()
             .await
@@ -48,7 +47,7 @@ async fn shutdown_signal() {
     let terminate = std::future::pending::<()>();
 
     tokio::select! {
-        _ = ctrl_c => {},
-        _ = terminate => {},
+        _ = ctrl_c => shared_state.db_pool.close().await,
+        _ = terminate => shared_state.db_pool.close().await,
     }
 }
