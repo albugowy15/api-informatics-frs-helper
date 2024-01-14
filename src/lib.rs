@@ -107,6 +107,34 @@ impl<'a> From<ErrorViews<'a>> for (StatusCode, String) {
     }
 }
 
+/// This implementation allows an `ErrorViews` to be converted into a `axum::response::Response`.
+/// This is useful for sending `ErrorViews` as a HTTP response in a web server.
+///
+/// # Methods
+///
+/// * `into_response`: Converts the `ErrorViews` into a `axum::response::Response`.
+///
+/// Depending on the variant of `ErrorViews`, it returns a different HTTP status code and error message:
+///
+/// - `BadRequest(message)`: Returns a `BAD_REQUEST` status code and the provided error message.
+/// - `NotFound(field)`: Returns a `NOT_FOUND` status code and a message indicating that the provided field was not found.
+/// - `Internal`: Returns an `INTERNAL_SERVER_ERROR` status code and a generic error message.
+impl<'a> IntoResponse for ErrorViews<'a> {
+    fn into_response(self) -> axum::response::Response {
+        match ErrorViews::Internal {
+            ErrorViews::BadRequest(message) => (StatusCode::BAD_REQUEST, message).into_response(),
+            ErrorViews::NotFound(field) => {
+                (StatusCode::NOT_FOUND, format!("{} tidak ditemukan", field)).into_response()
+            }
+            ErrorViews::Internal => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                String::from("Internal server error"),
+            )
+                .into_response(),
+        }
+    }
+}
+
 /// `HtmlTemplate` is a struct that wraps a type `T` which implements the `Template` trait.
 /// This struct is used to render the template into HTML and convert it into a response.
 pub struct HtmlTemplate<T>(pub T);
@@ -124,11 +152,7 @@ where
     fn into_response(self) -> axum::response::Response {
         match self.0.render() {
             Ok(html) => Html(html).into_response(),
-            Err(err) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to render template. Error: {err}"),
-            )
-                .into_response(),
+            Err(_) => ErrorViews::Internal.into_response(),
         }
     }
 }

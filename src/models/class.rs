@@ -28,11 +28,11 @@ impl FromRows for Vec<Class> {
 
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct CompactClass {
-    pub id: String,
-    pub kode_kelas: String,
-    pub hari: String,
-    pub jam: String,
-    pub kode_dosen: String,
+    id: String,
+    kode_kelas: String,
+    hari: String,
+    jam: String,
+    kode_dosen: String,
 }
 impl From<CompactClass> for Json<Value> {
     fn from(class: CompactClass) -> Self {
