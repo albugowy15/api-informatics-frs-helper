@@ -4,7 +4,7 @@ version = "1.1.0"
 edition = "2021"
 description = "A RESTful API designed to gather more information related to Informatics FRS Helper. It provides several endpoints to access data related to courses, lecturers, and classes."
 authors = ["Mohamad Kholid Bughowi <kholidbughowi@gmail.com>"]
-homepage = "https://github.com/albugowy15/api-informatics-frs-helper"
+homepage = "https://api-informatics-frs-helper.fly.dev"
 repository = "https://github.com/albugowy15/api-informatics-frs-helper"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -22,6 +22,6 @@ serde_json = { version = "1.0.111", features = ["preserve_order"]}
 sqlx = { version = "0.7.3", features = ["runtime-tokio", "tls-rustls", "mysql"] }
 tokio = { version ="1.35.1", features = ["rt-multi-thread", "macros", "net", "signal"] }
 tower = { version = "0.4.13", features = ["buffer", "limit", "util"]}
-tower-http = { version = "0.5.0", features = ["fs", "trace", "timeout", "cors", "compression-gzip"] }
+tower-http = { version = "0.5.1", features = ["fs", "trace", "timeout", "cors", "compression-gzip"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
