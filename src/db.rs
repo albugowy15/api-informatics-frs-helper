@@ -14,7 +14,8 @@ impl DbConnection {
         let pool = MySqlPoolOptions::new()
             .max_connections(5)
             .connect(&database_url)
-            .await?;
+            .await
+            .with_context(|| "Error opening database connection")?;
 
         Ok(Self { pool })
     }
