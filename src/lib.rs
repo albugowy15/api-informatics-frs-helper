@@ -79,54 +79,54 @@ impl<T: Serialize> DataResponse<T> {
     }
 }
 
-/// `ErrorViews` is an enum representing different types of errors that can occur in the application.
+/// `AppError` is an enum representing different types of errors that can occur in the application.
 /// Each variant corresponds to a different type of error:
 /// - `Internal` represents an internal server error.
 /// - `NotFound` represents a not found error, with a string slice that specifies what was not found.
 /// - `BadRequest` represents a bad request error, with a string that provides more details about the error.
-pub enum ErrorViews<'a> {
+pub enum AppError {
     Internal,
-    NotFound(&'a str),
+    NotFound(String),
     BadRequest(String),
 }
 
-/// This implementation allows an `ErrorViews` to be converted into a tuple of `StatusCode` and `String`.
-/// This is useful for sending `ErrorViews` as a HTTP response in a web server.
-impl<'a> From<ErrorViews<'a>> for (StatusCode, String) {
-    fn from(val: ErrorViews<'a>) -> Self {
+/// This implementation allows an `AppError` to be converted into a tuple of `StatusCode` and `String`.
+/// This is useful for sending `AppError` as a HTTP response in a web server.
+impl From<AppError> for (StatusCode, String) {
+    fn from(val: AppError) -> Self {
         match val {
-            ErrorViews::Internal => (
+            AppError::Internal => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 String::from("Internal server error"),
             ),
-            ErrorViews::NotFound(field) => {
+            AppError::NotFound(field) => {
                 (StatusCode::NOT_FOUND, format!("{} tidak ditemukan", field))
             }
-            ErrorViews::BadRequest(message) => (StatusCode::BAD_REQUEST, message),
+            AppError::BadRequest(message) => (StatusCode::BAD_REQUEST, message),
         }
     }
 }
 
-/// This implementation allows an `ErrorViews` to be converted into a `axum::response::Response`.
-/// This is useful for sending `ErrorViews` as a HTTP response in a web server.
+/// This implementation allows an `AppError` to be converted into a `axum::response::Response`.
+/// This is useful for sending `AppError` as a HTTP response in a web server.
 ///
 /// # Methods
 ///
-/// * `into_response`: Converts the `ErrorViews` into a `axum::response::Response`.
+/// * `into_response`: Converts the `AppError` into a `axum::response::Response`.
 ///
-/// Depending on the variant of `ErrorViews`, it returns a different HTTP status code and error message:
+/// Depending on the variant of `AppError`, it returns a different HTTP status code and error message:
 ///
 /// - `BadRequest(message)`: Returns a `BAD_REQUEST` status code and the provided error message.
 /// - `NotFound(field)`: Returns a `NOT_FOUND` status code and a message indicating that the provided field was not found.
 /// - `Internal`: Returns an `INTERNAL_SERVER_ERROR` status code and a generic error message.
-impl<'a> IntoResponse for ErrorViews<'a> {
+impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
-        match ErrorViews::Internal {
-            ErrorViews::BadRequest(message) => (StatusCode::BAD_REQUEST, message).into_response(),
-            ErrorViews::NotFound(field) => {
+        match AppError::Internal {
+            AppError::BadRequest(message) => (StatusCode::BAD_REQUEST, message).into_response(),
+            AppError::NotFound(field) => {
                 (StatusCode::NOT_FOUND, format!("{} tidak ditemukan", field)).into_response()
             }
-            ErrorViews::Internal => (
+            AppError::Internal => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 String::from("Internal server error"),
             )
@@ -152,7 +152,7 @@ where
     fn into_response(self) -> axum::response::Response {
         match self.0.render() {
             Ok(html) => Html(html).into_response(),
-            Err(_) => ErrorViews::Internal.into_response(),
+            Err(_) => AppError::Internal.into_response(),
         }
     }
 }

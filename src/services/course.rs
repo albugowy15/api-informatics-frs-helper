@@ -11,7 +11,7 @@ use crate::{
     repositories::{
         class::ClassRepository, course::CourseRepository, lecturer::LecturerRepository,
     },
-    AppState, DataResponse, ErrorViews, JsonResponse, RouteHandler,
+    AppError, AppState, DataResponse, JsonResponse, RouteHandler,
 };
 
 pub async fn courses(
@@ -22,21 +22,21 @@ pub async fn courses(
         .get("sks")
         .map_or(false, |s| s.parse::<i8>().is_err())
     {
-        return Err(ErrorViews::BadRequest("sks wajib bertipe integer".into()).into());
+        return Err(AppError::BadRequest("sks wajib bertipe integer".into()).into());
     }
 
     if params
         .get("semester")
         .map_or(false, |s| s.parse::<i8>().is_err())
     {
-        return Err(ErrorViews::BadRequest("semester wajib bertipe integer".into()).into());
+        return Err(AppError::BadRequest("semester wajib bertipe integer".into()).into());
     }
 
     let course_repo = CourseRepository::new(&state.db_pool);
     let courses = course_repo
         .get_courses_with_filter(&params)
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
 
     Ok(DataResponse::new(courses.len(), courses).into())
 }
@@ -50,8 +50,8 @@ pub async fn course_by_id(
         .get_course_by_id(&id_matkul)
         .await
         .map_err(|err| match err {
-            sqlx::Error::RowNotFound => ErrorViews::NotFound("Matkul"),
-            _ => ErrorViews::Internal,
+            sqlx::Error::RowNotFound => AppError::NotFound("Matkul".to_string()),
+            _ => AppError::Internal,
         })?;
     Ok(course.into())
 }
@@ -63,7 +63,7 @@ pub async fn courses_with_lecturers(
     let courses_lecturers = course_repo
         .get_courses_with_lecturers()
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     Ok(DataResponse::new(courses_lecturers.len(), courses_lecturers).into())
 }
 
@@ -74,7 +74,7 @@ pub async fn courses_with_classes(
     let courses_classes = course_repo
         .get_courses_with_classes()
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     Ok(DataResponse::new(courses_classes.len(), courses_classes).into())
 }
 
@@ -86,7 +86,7 @@ pub async fn course_by_id_with_classes(
     let course = course_repo
         .get_course_by_id(&id_matkul)
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     let class_repo = ClassRepository::new(&state.db_pool);
     let classes = class_repo
         .get_classes_by_course_id(&course.id)
@@ -110,7 +110,7 @@ pub async fn course_by_id_with_lecturers(
     let course = course_repo
         .get_course_by_id(&id_matkul)
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     let lecturer_repo = LecturerRepository::new(&state.db_pool);
     let lecturers = lecturer_repo
         .get_lecturers_by_course_id(&course.id)

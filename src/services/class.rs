@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use axum::extract::{Path, Query, State};
 
 use crate::{
-    repositories::class::ClassRepository, AppState, DataResponse, ErrorViews, JsonResponse,
+    repositories::class::ClassRepository, AppError, AppState, DataResponse, JsonResponse,
     RouteHandler,
 };
 
@@ -15,7 +15,7 @@ pub async fn classes(
     let classes = class_repo
         .get_classes_with_filter(&params)
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     Ok(DataResponse::new(classes.len(), classes).into())
 }
 
@@ -28,8 +28,8 @@ pub async fn class_by_id(
         .get_class_by_id(&id_kelas)
         .await
         .map_err(|err| match err {
-            sqlx::Error::RowNotFound => ErrorViews::NotFound("Kelas"),
-            _ => ErrorViews::Internal,
+            sqlx::Error::RowNotFound => AppError::NotFound("Kelas".to_string()),
+            _ => AppError::Internal,
         })?;
     Ok(class.into())
 }

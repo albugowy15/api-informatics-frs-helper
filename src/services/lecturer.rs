@@ -11,7 +11,7 @@ use crate::{
     repositories::{
         class::ClassRepository, course::CourseRepository, lecturer::LecturerRepository,
     },
-    AppState, DataResponse, ErrorViews, JsonResponse, RouteHandler,
+    AppError, AppState, DataResponse, JsonResponse, RouteHandler,
 };
 
 pub async fn lecturers(
@@ -22,7 +22,7 @@ pub async fn lecturers(
     let lecturers = lecturer_repo
         .get_lecturers_with_filter(&params)
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     Ok(DataResponse::new(lecturers.len(), lecturers).into())
 }
 
@@ -33,7 +33,7 @@ pub async fn lecturers_with_courses(
     let lecturers_courses = lecturer_repo
         .get_lecturers_with_courses()
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     Ok(DataResponse::new(lecturers_courses.len(), lecturers_courses).into())
 }
 
@@ -44,7 +44,7 @@ pub async fn lecturers_with_classes(
     let lecturers_classes = lecturer_repo
         .get_lecturers_with_classes()
         .await
-        .map_err(|_| ErrorViews::Internal)?;
+        .map_err(|_| AppError::Internal)?;
     Ok(DataResponse::new(lecturers_classes.len(), lecturers_classes).into())
 }
 
@@ -57,8 +57,8 @@ pub async fn lecturer_by_id(
         .get_lecturer_by_id(&id_dosen)
         .await
         .map_err(|err| match err {
-            sqlx::Error::RowNotFound => ErrorViews::NotFound("Dosen"),
-            _ => ErrorViews::Internal,
+            sqlx::Error::RowNotFound => AppError::NotFound("Dosen".to_string()),
+            _ => AppError::Internal,
         })?;
     Ok(lecturer.into())
 }
@@ -72,8 +72,8 @@ pub async fn lecturer_by_id_with_classes(
         .get_lecturer_by_id(&id_dosen)
         .await
         .map_err(|err| match err {
-            sqlx::Error::RowNotFound => ErrorViews::NotFound("Dosen"),
-            _ => ErrorViews::Internal,
+            sqlx::Error::RowNotFound => AppError::NotFound("Dosen".to_string()),
+            _ => AppError::Internal,
         })?;
     let class_repo = ClassRepository::new(&state.db_pool);
     let classes = class_repo
@@ -98,8 +98,8 @@ pub async fn lecturer_by_id_with_courses(
         .get_lecturer_by_id(&id_dosen)
         .await
         .map_err(|err| match err {
-            sqlx::Error::RowNotFound => ErrorViews::NotFound("Dosen"),
-            _ => ErrorViews::Internal,
+            sqlx::Error::RowNotFound => AppError::NotFound("Dosen".to_string()),
+            _ => AppError::Internal,
         })?;
     let course_repo = CourseRepository::new(&state.db_pool);
     let courses = course_repo
