@@ -1,6 +1,7 @@
 FROM rust:bookworm AS builder
 WORKDIR /app
 COPY . .
+RUN apt-get update && apt-get install cmake -y
 RUN \
   --mount=type=cache,target=/app/target/ \
   --mount=type=cache,target=/usr/local/cargo/registry/ \
