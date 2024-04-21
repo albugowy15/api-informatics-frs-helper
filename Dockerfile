@@ -18,17 +18,7 @@ cargo build --locked --release
 cp ./target/release/$APP_NAME /bin/server
 EOF
 
-FROM debian:bullseye-slim AS final
-ARG UID=10001
-RUN adduser \
-  --disabled-password \
-  --gecos "" \
-  --home "/nonexistent" \
-  --shell "/sbin/nologin" \
-  --no-create-home \
-  --uid "${UID}" \
-  appuser
-USER appuser
+FROM gcr.io/distroless/cc-debian11:nonroot AS final
 COPY --from=build /bin/server /bin/
 COPY /assets /assets
 COPY /templates /templates

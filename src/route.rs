@@ -27,8 +27,7 @@ pub async fn get_routes(shared_state: Arc<AppState>) -> Router {
                 .layer(middleware::cors())
                 .layer(middleware::compression())
                 .layer(middleware::request_timeout())
-                .layer(BufferLayer::new(1024))
-                .layer(middleware::rate_limit()),
+                .layer(BufferLayer::new(1024)),
         )
         .with_state(shared_state)
 }
