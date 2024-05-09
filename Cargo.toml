@@ -10,15 +10,15 @@ repository = "https://github.com/albugowy15/api-informatics-frs-helper"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.82"
+anyhow = "1.0.83"
 askama = "0.12.1"
 axum = { version = "0.7.5", features = ["tracing"] }
 axum-extra = "0.9.3"
 dotenvy = "0.15.7"
 hyper = "1.3.1"
 rustls = "0.23.5"
-serde = "1.0.198"
-serde_json = { version = "1.0.116", features = ["preserve_order"] }
+serde = "1.0.201"
+serde_json = { version = "1.0.117", features = ["preserve_order"] }
 sqlx = { version = "0.7.4", features = [
   "runtime-tokio",
   "tls-rustls",
