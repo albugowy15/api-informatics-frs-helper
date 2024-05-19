@@ -1,4 +1,4 @@
-ARG RUST_VERSION=1.77.2
+ARG RUST_VERSION=1.78
 ARG APP_NAME=api-informatics-frs-helper
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
 ARG APP_NAME
