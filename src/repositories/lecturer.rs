@@ -17,7 +17,7 @@ pub struct LecturerRepository<'a> {
 }
 
 impl<'a> LecturerRepository<'a> {
-    pub fn new(db_connection: &'a DbPool) -> LecturerRepository {
+    pub fn new(db_connection: &'a DbPool) -> LecturerRepository<'a> {
         LecturerRepository { db: db_connection }
     }
 

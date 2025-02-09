@@ -13,7 +13,7 @@ pub struct ClassRepository<'a> {
 }
 
 impl<'a> ClassRepository<'a> {
-    pub fn new(db_connection: &'a DbPool) -> ClassRepository {
+    pub fn new(db_connection: &'a DbPool) -> ClassRepository<'a> {
         ClassRepository { db: db_connection }
     }
 

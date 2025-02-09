@@ -18,16 +18,13 @@ pub async fn courses(
     State(state): State<Arc<AppState>>,
     Query(params): Query<HashMap<String, String>>,
 ) -> RouteHandler<JsonResponse> {
-    if params
-        .get("sks")
-        .map_or(false, |s| s.parse::<i8>().is_err())
-    {
+    if params.get("sks").is_some_and(|s| s.parse::<i8>().is_err()) {
         return Err(AppError::BadRequest("sks wajib bertipe integer".into()).into());
     }
 
     if params
         .get("semester")
-        .map_or(false, |s| s.parse::<i8>().is_err())
+        .is_some_and(|s| s.parse::<i8>().is_err())
     {
         return Err(AppError::BadRequest("semester wajib bertipe integer".into()).into());
     }

@@ -34,7 +34,7 @@ impl<T: Serialize> From<LecturerWithClasses<T>> for Json<Value> {
         Json(json!(value))
     }
 }
-impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for LecturerWithClasses<TData> {
+impl<TData: Default + DeserializeOwned> FromRow<'_, MySqlRow> for LecturerWithClasses<TData> {
     fn from_row(row: &MySqlRow) -> Result<Self, sqlx::Error> {
         Ok(Self {
             id: row.try_get("id")?,
@@ -62,7 +62,7 @@ impl<T: Serialize> From<LecturerWithCourses<T>> for Json<Value> {
         Json(json!(value))
     }
 }
-impl<'a, TData: Default + DeserializeOwned> FromRow<'a, MySqlRow> for LecturerWithCourses<TData> {
+impl<TData: Default + DeserializeOwned> FromRow<'_, MySqlRow> for LecturerWithCourses<TData> {
     fn from_row(row: &MySqlRow) -> Result<Self, sqlx::Error> {
         Ok(Self {
             id: row.try_get("id")?,

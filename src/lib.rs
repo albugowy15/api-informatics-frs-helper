@@ -24,7 +24,7 @@ pub mod services;
 /// # Fields
 ///
 /// * `db_pool`: The database pool used by the application. A database pool is a cache of
-/// database connections maintained so that the connections can be reused when needed.
+///     database connections maintained so that the connections can be reused when needed.
 pub struct AppState {
     pub db_pool: DbPool,
 }
