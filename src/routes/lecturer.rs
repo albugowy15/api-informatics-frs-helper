@@ -9,13 +9,13 @@ pub fn lecturer_routes() -> Router<Arc<AppState>> {
         .route("/", get(lecturer::lecturers))
         .route("/matkul", get(lecturer::lecturers_with_courses))
         .route("/kelas", get(lecturer::lecturers_with_classes))
-        .route("/:id_dosen", get(lecturer::lecturer_by_id))
+        .route("/{id_dosen}", get(lecturer::lecturer_by_id))
         .route(
-            "/:id_dosen/kelas",
+            "/{id_dosen}/kelas",
             get(lecturer::lecturer_by_id_with_classes),
         )
         .route(
-            "/:id_dosen/matkul",
+            "/{id_dosen}/matkul",
             get(lecturer::lecturer_by_id_with_courses),
         )
 }
