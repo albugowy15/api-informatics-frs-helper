@@ -1,12 +1,12 @@
 use askama::Template;
 use axum::{
-    response::{Html, IntoResponse},
     Json,
+    response::{Html, IntoResponse},
 };
 use db::DbPool;
 use hyper::StatusCode;
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use sqlx::mysql::MySqlRow;
 
 pub mod db;
@@ -24,7 +24,7 @@ pub mod services;
 /// # Fields
 ///
 /// * `db_pool`: The database pool used by the application. A database pool is a cache of
-///     database connections maintained so that the connections can be reused when needed.
+///   database connections maintained so that the connections can be reused when needed.
 pub struct AppState {
     pub db_pool: DbPool,
 }

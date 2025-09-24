@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use sqlx::FromRow;
 
 use crate::{
+    FromRows,
     db::DbPool,
     models::class::{Class, ClassWithSubjectName, CompactClass},
-    FromRows,
 };
 
 pub struct ClassRepository<'a> {
@@ -24,14 +24,14 @@ impl<'a> ClassRepository<'a> {
         let lecturer_code_param = params.get("kode_dosen").map(|s| s.to_lowercase());
         let matches_day = day_param
             .as_ref()
-            .map_or(true, |day| class.hari.to_lowercase() == *day);
-        let matches_hour = hour_param.as_ref().map_or(true, |hour| class.jam == *hour);
+            .is_none_or(|day| class.hari.to_lowercase() == *day);
+        let matches_hour = hour_param.as_ref().is_none_or(|hour| class.jam == *hour);
         let matches_course = course_param
             .as_ref()
-            .map_or(true, |course| class.matkul.to_lowercase().contains(course));
-        let matches_lecturer_code = lecturer_code_param.as_ref().map_or(true, |lecturer| {
-            class.kode_dosen.to_lowercase() == *lecturer
-        });
+            .is_none_or(|course| class.matkul.to_lowercase().contains(course));
+        let matches_lecturer_code = lecturer_code_param
+            .as_ref()
+            .is_none_or(|lecturer| class.kode_dosen.to_lowercase() == *lecturer);
         matches_day && matches_hour && matches_course && matches_lecturer_code
     }
 

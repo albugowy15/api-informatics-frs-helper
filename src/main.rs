@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use api_informatics_frs_helper::{db::DbConnection, route, AppState};
+use api_informatics_frs_helper::{AppState, db::DbConnection, route};
 use tokio::signal;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 

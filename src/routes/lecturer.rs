@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
-use crate::{services::lecturer, AppState};
+use crate::{AppState, services::lecturer};
 
 pub fn lecturer_routes() -> Router<Arc<AppState>> {
     Router::new()

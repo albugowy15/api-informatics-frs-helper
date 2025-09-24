@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use sqlx::FromRow;
 
 use crate::{
+    FromRows,
     db::DbPool,
     models::{
         class::ClassWithSubjectName,
         course::Course,
         lecturer::{Lecturer, LecturerWithClasses, LecturerWithCourses},
     },
-    FromRows,
 };
 
 pub struct LecturerRepository<'a> {
@@ -24,12 +24,12 @@ impl<'a> LecturerRepository<'a> {
     fn filter(params: &HashMap<String, String>, lecturer: &Lecturer) -> bool {
         let fullname_param = params.get("nama").map(|s| s.to_lowercase());
         let code_param = params.get("kode").map(|s| s.to_lowercase());
-        let matches_fullname = fullname_param.as_ref().map_or(true, |fullname| {
-            lecturer.nama.to_lowercase().contains(fullname)
-        });
+        let matches_fullname = fullname_param
+            .as_ref()
+            .is_none_or(|fullname| lecturer.nama.to_lowercase().contains(fullname));
         let matches_code = code_param
             .as_ref()
-            .map_or(true, |code| lecturer.kode.to_lowercase() == *code);
+            .is_none_or(|code| lecturer.kode.to_lowercase() == *code);
         matches_fullname && matches_code
     }
 

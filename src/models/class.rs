@@ -1,7 +1,7 @@
 use axum::Json;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use sqlx::{mysql::MySqlRow, FromRow};
+use serde_json::{Value, json};
+use sqlx::{FromRow, mysql::MySqlRow};
 
 use crate::FromRows;
 

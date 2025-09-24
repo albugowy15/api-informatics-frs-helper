@@ -1,7 +1,7 @@
 use std::env;
 
 use anyhow::{Context, Ok, Result};
-use sqlx::{mysql::MySqlPoolOptions, MySql, MySqlPool, Pool};
+use sqlx::{MySql, MySqlPool, Pool, mysql::MySqlPoolOptions};
 pub type DbPool = MySqlPool;
 
 pub struct DbConnection {

@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
-use axum::{error_handling::HandleErrorLayer, routing::get, BoxError, Router};
+use axum::{BoxError, Router, error_handling::HandleErrorLayer, routing::get};
 use hyper::StatusCode;
-use tower::{buffer::BufferLayer, ServiceBuilder};
+use tower::{ServiceBuilder, buffer::BufferLayer};
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
-use crate::{middleware, routes, services, AppState};
+use crate::{AppState, middleware, routes, services};
 
 pub async fn get_routes(shared_state: Arc<AppState>) -> Router {
     Router::new()

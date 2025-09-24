@@ -3,8 +3,8 @@ use std::{collections::HashMap, sync::Arc};
 use axum::extract::{Path, Query, State};
 
 use crate::{
-    repositories::class::ClassRepository, AppError, AppState, DataResponse, JsonResponse,
-    RouteHandler,
+    AppError, AppState, DataResponse, JsonResponse, RouteHandler,
+    repositories::class::ClassRepository,
 };
 
 pub async fn classes(

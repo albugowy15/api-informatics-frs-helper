@@ -3,6 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use axum::extract::{Path, Query, State};
 
 use crate::{
+    AppError, AppState, DataResponse, JsonResponse, RouteHandler,
     models::{
         class::ClassWithSubjectName,
         course::Course,
@@ -11,7 +12,6 @@ use crate::{
     repositories::{
         class::ClassRepository, course::CourseRepository, lecturer::LecturerRepository,
     },
-    AppError, AppState, DataResponse, JsonResponse, RouteHandler,
 };
 
 pub async fn lecturers(

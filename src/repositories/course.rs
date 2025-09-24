@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use sqlx::FromRow;
 
 use crate::{
+    FromRows,
     db::DbPool,
     models::{
         class::CompactClass,
         course::{Course, CourseWithClass, CourseWithLecturer},
         lecturer::Lecturer,
     },
-    FromRows,
 };
 
 pub struct CourseRepository<'a> {
@@ -25,13 +25,13 @@ impl<'a> CourseRepository<'a> {
         let course_name_param = params.get("nama").map(|s| s.to_lowercase());
         let semester_param = params.get("semester").and_then(|s| s.parse::<i8>().ok());
         let sks_param = params.get("sks").and_then(|s| s.parse::<i8>().ok());
-        let matches_course_name = course_name_param.as_ref().map_or(true, |course_name| {
-            course.matkul.to_lowercase().contains(course_name)
-        });
+        let matches_course_name = course_name_param
+            .as_ref()
+            .is_none_or(|course_name| course.matkul.to_lowercase().contains(course_name));
         let matches_semester = semester_param
             .as_ref()
-            .map_or(true, |semester| course.semester == *semester);
-        let matches_sks = sks_param.as_ref().map_or(true, |sks| course.sks == *sks);
+            .is_none_or(|semester| course.semester == *semester);
+        let matches_sks = sks_param.as_ref().is_none_or(|sks| course.sks == *sks);
         matches_course_name && matches_semester && matches_sks
     }
 
