@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/albugowy15/api-informatics-frs-helper/compare/v1.4.0...v1.4.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* clippy and fmt warnings ([9b10660](https://github.com/albugowy15/api-informatics-frs-helper/commit/9b106609909fd22fbaa4d3e54ccbf3e97993565e))
+
 ## [1.4.0](https://github.com/albugowy15/api-informatics-frs-helper/compare/v1.3.0...v1.4.0) (2025-02-09)
 
 
